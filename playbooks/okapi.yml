@@ -1,0 +1,11 @@
+- name: install okapi
+  hosts: okapi 
+
+  roles:
+    #- { role: okapi,    tags: ['okapi'],    become: true }
+    #- { role: build-okapi-module-list, tags: ['okapi'] }
+    #- { role: okapi-register-modules,  tags: ['okapi'] }
+    #- tenant-data
+    #- okapi-tenant-deploy
+    #- create-tenant-admin
+    #- tenant-admin-permissions

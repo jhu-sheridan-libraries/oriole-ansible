@@ -1,0 +1,47 @@
+---
+- name: install okapi 
+  hosts: okapi 
+
+  tasks:
+
+    - name: copy log conf
+      become: true
+      copy:
+        src: 'okapi-debian/dist/log4j.properties'
+        dest: '/etc/folio/okapi/'
+        owner: "root"
+        group: "root"
+
+    - name: copy service conf
+      become: true
+      copy:
+        src: 'okapi-debian/debian/okapi.service'
+        dest: '/lib/systemd/system/'
+        owner: "root"
+        group: "root"
+      notify: okapi 
+
+    - name: create okapi data dir
+      become: true
+      file:
+        state: directory 
+        path: /var/lib/okapi 
+        owner: "{{ okapi_user }}" 
+        group: "{{ okapi_group }}" 
+
+    - name: create okapi log dir
+      become: true
+      file:
+        state: directory 
+        path: /var/log/folio/okapi 
+        owner: "{{ okapi_user }}" 
+        group: "{{ okapi_group }}" 
+
+    - name: create okapi state dir
+      become: true
+      file:
+        state: directory 
+        path: /var/run/okapi 
+        owner: "{{ okapi_user }}" 
+        group: "{{ okapi_group }}" 
+

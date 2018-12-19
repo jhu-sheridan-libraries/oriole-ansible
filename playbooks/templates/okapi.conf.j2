@@ -1,0 +1,56 @@
+#
+# FOLIO Okapi configuration 
+#
+#  Okapi requires exactly one command to be given depending on how
+#  it is utilized.
+#
+# 'cluster' - for running in clustered mode/production
+# 'dev' - for running in development, single-node mode
+# 'deployment' - for okapi deployment only. Clustered mode
+# 'proxy' -  for proxy + discovery. Clustered mode
+#
+# 
+role={{ okapi_role }}
+
+# Default okapi port
+port={{ okapi_port }}   
+
+# Define port range for modules. Default range: 9131-9141.
+port_start={{ okapi_port_start }}
+port_end={{ okapi_port_end }}
+
+# Hostname to be used in the URLs returned by the deployment service. 
+# Defaults to 'localhost'
+host={{ okapi_host }}
+
+# Define the storage back end - 'postgres' or 'inmemory' 
+# ('postgres' only valid when 'role' is set to 'cluster' or 'dev')
+# (valid only when 'role' is set to 'dev' or 'cluster')
+storage={{ okapi_storage }}
+
+# Set Postgres parameters.  Ignored unless 'storage="postgres"'
+postgres_host={{ pg_host }}
+postgres_port={{ pg_port }}
+postgres_user={{ okapidb_user }}
+postgres_password={{ okapidb_password }}
+postgres_database={{ okapidb_name }}
+
+# Define Docker URL if we are deploying modules via Docker. 
+dockerurl={{ okapi_dockerurl }}
+
+# Tell Okapi its own official URL.  This gets passed to the 
+# modules as X-Okapi-Url header, and the modules can use this 
+# to make further requests to Okapi.  Defaults to 'http://localhost:9130'
+# or whatever port specified. There should be no trailing slash, but if 
+# there happens to be one, Okapi will remove it. 
+okapiurl={{ okapi_url }}
+
+# Okapi Logging options
+#
+# Define logging level.  Defaults to 'INFO'; other valid values are 'DEBUG',
+# 'TRACE', 'WARN', and 'ERROR' 
+loglevel={{ okapi_loglevel }}
+
+# Specify external log4j configuration file.  Otherwise logging defaults 
+# to STDOUT.  If defined, 'loglevel' is ignored.
+log4j_config={{ okapi_log4j_config }}

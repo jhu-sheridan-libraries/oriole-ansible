@@ -1,0 +1,127 @@
+# used by the okapi role
+# for defaults also see role/okapi/default/main.yml 
+# see apropriate vault_okapi.yml
+
+# List of tenants
+folio_tenants:
+  - id: 'jh'
+    name: 'Johns Hopkins'
+    description: 'Johns Hopkins Libraries'
+  - id: 'jh-test'
+    name: 'Test Johns Hopkins'
+    description: 'Test tenant for Johns Hopkins'
+
+folio_user:      'folio'
+folio_group:     'folio'
+
+okapi_user:      'okapi'
+okapi_group:     'okapi'
+
+okapi_version:    'latest'
+okapi_role:       'dev'
+okapi_port:       9130
+okapi_port_start: 9131
+okapi_port_end:   9661
+okapi_url:        "http://localhost:{{ okapi_port }}"
+okapi_host:       "localhost"
+
+okapi_conf_dir:   "/etc/folio/okapi"
+okapi_log_dir:    "/var/log/folio/okpai"
+#okapi_lib_dir:    "/usr/share/folio/okapi/lib"
+#okapi_data_dir:   "/var/lib/okapi"
+#okapi_pid_dir:    "/var/run/okapi"
+
+# change to 'postgres' for postgres backend
+#okapi_storage:   'inmemory'
+
+okapi_dockerurl:   'http://localhost:4243'
+
+okapi_loglevel:    'INFO'
+okapi_log4j_config: "{{ okapi_conf_dir }}/log4j.properties"
+
+# Set additional Java opts here, e.g.:
+# okapi_java_opts:
+#   - "-Xss20M"
+# These will be written to /etc/default/okapi
+okapi_java_opts: []
+
+# postgres
+# force install from postgress repo 
+postgres_version_major:     9
+postgres_version_minor:     6
+
+
+pg_host:           "{{ ansible_default_ipv4.address }}"
+pg_port:           5432
+pg_admin_user:     "folio_admin"
+pg_admin_password: "{{ vault_pg_admin_password }}"
+
+# allow user to login locally 
+postgres_hba_entries:
+  - type:                   "local"
+    database:               "all"
+    user:                   "postgres"
+    address:                ""
+    method:                 "peer"
+
+# postgres okapi
+okapi_storage:     'postgres'
+okapidb_user:      "okapi"
+okapidb_password:  "{{ vault_okapidb_password }}"
+okapidb_name:      "okapi"
+
+# docker
+okapi_logging_level: "INFO"
+
+# postgres db vars
+db_create_users:        true
+db_users:
+  - user:               "{{ pg_admin_user }}"
+    pass:               "{{ pg_admin_password }}"
+    flags:              "SUPERUSER,LOGIN"
+  - user:               "{{ okapidb_user }}"
+    pass:               "{{ okapidb_password }}"
+    flags:              "LOGIN"
+
+db_create_databases:    true
+db_databases:
+  - name:               "folio"
+    encoding:           "UTF-8"
+    owner:              "folio_admin"
+  - name:               "{{ okapidb_name }}"
+    encoding:           "UTF-8"
+    owner:              "{{ okapidb_user }}"
+
+mod_auth_modules:
+  - { index: 0, module: permissions-module }
+  - { index: 1, module: authtoken-module }
+  - { index: 2, module: login-module }
+
+admin_user:
+  username: diku_admin
+  password: admin
+  hash: 52DCA1934B2B32BEA274900A496DF162EC172C1E
+  salt: 483A7C864569B90C24A0A6151139FF0B95005B16
+  permissions: "\\\"perms.all\\\""
+  id: 1ad737b0-d847-11e6-bf26-cec0c932ce01
+  first_name: DIKU
+  last_name: ADMINISTRATOR
+
+# TODO write a new ansible role which loads the images from docker_hub
+
+folio_modules:
+  - name: mod-authtoken
+    version: '1.5.2'
+  - name: mod-configuration
+    version: '5.0.1'
+  - name: mod-permissions
+    version: '5.4.0'
+  - name: mod-users
+    version: '15.3.0'
+  - name: mod-login
+    version: '4.6.0'
+  - name: mod-authtoken
+    version: '2.0.3'
+  - name: mod-oriole
+    version: '1.0.0'
+    docker_image: 'farooqsadiq/mod-oriole:1.0.0'

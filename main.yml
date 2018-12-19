@@ -1,0 +1,6 @@
+---
+- import_playbook: playbooks/prereqs.yml
+- import_playbook: playbooks/db_config.yml
+#- import_playbook: playbooks/okapi.yml
+- import_playbook: playbooks/oriole.yml
+

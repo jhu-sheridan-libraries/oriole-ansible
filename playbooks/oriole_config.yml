@@ -1,0 +1,43 @@
+---
+# Config okapi tenants, modules
+- hosts: oriole
+
+  tasks:
+    - name: register modules with okapi
+      uri:
+        url: "{{okapi_url}}/_/proxy/modules"
+        method: 'POST'
+        #body: "{{ lookup('file', item ) }}"
+        src: "{{ item }}"
+        body_format: 'json'
+      with_fileglob:
+        - "descriptors/*.json" 
+
+    # todo:  check for existance, check state
+    - name: register tenants
+      uri:
+        url: "{{okapi_url}}/_/proxy/tenants" 
+        method: 'POST'
+        body: "{{ item }}"
+        body_format: 'json'
+      with_items: "{{ folio_tenants }}"
+
+    - name: enable okapi for jh 
+      uri:
+        url: "{{okapi_url}}/_/proxy/tenants/jh/modules"
+        method: 'POST'
+        body:
+          id: okapi
+        body_format: 'json'
+
+
+    - name: enable all modules for jh 
+      uri:
+        url: "{{okapi_url}}/_/proxy/tenants/jh/modules" 
+        method: 'POST'
+        body:
+          id: "{{ item.name }}-{{ item.version }}"
+        body_format: 'json'
+      with_items: "{{ folio_modules }}"
+
+

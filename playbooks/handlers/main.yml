@@ -1,0 +1,6 @@
+---
+- name: restart okapi container
+  become: yes
+  docker_contianer:
+    name: okapi
+    restart: yes

@@ -1,0 +1,8 @@
+---
+oriole:
+  hosts:
+    oriole-test.library.jhu.edu
+  children:
+    test:
+      hosts:
+        oriole-test.library.jhu.edu

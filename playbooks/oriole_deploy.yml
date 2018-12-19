@@ -1,0 +1,82 @@
+---
+# Deploy okapi and modules for okapi
+- hosts: oriole
+
+  tasks:
+
+    - name: install python pip docker package
+      become: yes
+      pip:
+        name: docker 
+
+    - name: db privilages 
+      postgresql_privs:
+        login_host: "{{ pg_host }}"
+        login_user: "{{ pg_admin_user }}"
+        login_password: "{{ pg_admin_password }}"
+        db: "{{ okapidb_name }}"
+        privs: ALL
+        type: database
+        role: "{{ okapidb_user }}"
+
+    - name: create okapi conf, log dirs 
+      become: true
+      file:
+        state: directory 
+        path: "{{ item }}"
+      with_items:
+        - "{{ okapi_conf_dir }}"
+        - "{{ okapi_log_dir }}"
+
+    
+    - name: config okapi container
+      become: yes
+      template: 
+        src: okapi.conf.j2 
+        dest: "{{ okapi_conf_dir }}/okapi.conf"
+        #notify: restart okapi container
+
+    - name: config okapi log4j
+      become: yes
+      template: 
+        src: log4j.properties.j2
+        dest: "{{ okapi_log4j_config }}"
+        #notify: restart okapi container
+
+    - name: create the okapi container
+      become: yes
+      docker_container: 
+        name:  "okapi"
+        image: "folioorg/okapi:2.22.0"
+        env:
+          JAVA_OPTIONS: |
+            -Xmx256m
+            -Dloglevel=DEBUG
+            -Dstorage=postgres
+            -Dpostgres_host={{ pg_host }}
+            -Dpostgres_port={{ pg_port }}
+            -Dpostgres_user={{ okapidb_user }}
+            -Dpostgres_password={{ okapidb_password }}
+            -Dpostgres_database={{ okapidb_name }}
+        exposed_ports:
+          - '{{okapi_port_start}}-{{okapi_port_end}}'
+          - "{{okapi_port}}"
+        ports: 
+          - "{{okapi_port}}:{{okapi_port}}"
+        volumes:
+          - "{{ okapi_conf_dir }}:{{okapi_conf_dir}}"
+          - "{{ okapi_log_dir }}:{{ okapi_log_dir }}"
+        command: "{{ okapi_role }}" 
+
+    - name: create and start folio contaienrs
+      become: yes
+      docker_container: 
+        name:  "{{ item.name }}"
+        image: "{{ ( item.docker_image | default( 'folioorg/' + item.name + ':' + item.version )) }}"
+        env:
+          JAVA_OPTIONS: |
+            -Xmx256m
+            -Dlogl=DEGUG
+        exposed_ports: 8081
+      with_items: "{{ folio_modules }}"
+

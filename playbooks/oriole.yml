@@ -1,0 +1,4 @@
+---
+- import_playbook: oriole_deploy.yml
+#- import_playbook: oriole_config.yml
+

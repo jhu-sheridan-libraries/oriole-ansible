@@ -1,0 +1,42 @@
+HTTP/1.1 200 OK
+Content-Type: application/json
+X-Okapi-Trace: GET okapi-2.22.0 /_/proxy/modules/mod-authtoken-2.0.1 : 200 3107us
+Content-Length: 764
+
+{
+  "id" : "mod-authtoken-2.0.1",
+  "name" : "authtoken",
+  "provides" : [ {
+    "id" : "authtoken",
+    "version" : "2.0",
+    "handlers" : [ {
+      "methods" : [ "POST" ],
+      "pathPattern" : "/token"
+    }, {
+      "methods" : [ "POST" ],
+      "pathPattern" : "/refreshtoken"
+    }, {
+      "methods" : [ "POST" ],
+      "pathPattern" : "/refresh"
+    } ]
+  } ],
+  "filters" : [ {
+    "methods" : [ "*" ],
+    "pathPattern" : "/*",
+    "phase" : "auth",
+    "type" : "headers"
+  } ],
+  "launchDescriptor" : {
+    "dockerImage" : "folioorg/mod-authtoken:2.0.1",
+    "dockerPull" : true,
+    "dockerArgs" : {
+      "HostConfig" : {
+        "PortBindings" : {
+          "8081/tcp" : [ {
+            "HostPort" : "%p"
+          } ]
+        }
+      }
+    }
+  }
+}

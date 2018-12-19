@@ -1,0 +1,13 @@
+# Vagrant
+.vagrant
+
+# Ansible
+*.retry
+*.cache
+/tmp
+
+# local
+roles/*
+!roles/README.md
+!roles/local.*
+

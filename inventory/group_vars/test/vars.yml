@@ -1,0 +1,51 @@
+---
+# setup vars
+environ:  "test" # dev || test || stage || preprod || prod
+
+# private vars
+login_user_passphrase: "{{ vault_login_user_passphrase }}"
+
+# apache vars:
+hostname:               "{{ app_name }}-{{ environ }}"
+domainname:             "library.jhu.edu"
+apache_remove_welcome:  true
+apache_https:           true
+
+rails_env: "production"
+
+app_branch: "development"
+
+chruby_chruby_version: "0.3.9"
+chruby_ruby_version: "ruby-2.3.6"
+chruby_outdated_ruby_versions:
+  - ruby-2.2.2
+
+findit_app_user_ssh_private_key:           "{{ vault_findit_app_user_ssh_private_key }}"
+findit_app_user_ssh_public_key:            "{{ vault_findit_app_user_ssh_public_key }}"
+
+passenger_deploy_rails:       true
+passenger_base_deploy_dir:    "/opt"
+
+findit_db_host:    "mariadb.dev.mse.jhu.edu"
+findit_db_name:    "findit_{{ environ }}"
+findit_db_user:    "{{ vault_findit_db_user }}"
+findit_db_pass:    "{{ vault_findit_db_pass }}"
+
+sfx_db_host:    "sfx.library.jhu.edu"
+sfx_db_port:    "3310"
+sfx_db_name:    "sfxlcl41"
+sfx_db_user:    "{{ vault_sfx_db_user }}"
+sfx_db_pass:    "{{ vault_sfx_db_pass }}"
+
+# TODO Cannot get os for findit role,  the env variables to load
+apache_service: "httpd"
+
+ssl_self_sign_cert:               false
+ssl_provided_cert:                false # certs placed on server by ops
+ssl_certificate_file:             "star_library.jhu.edu.crt"
+ssl_certificate_content:          "{{ vault_ssl_certificate_content }}"
+ssl_certificate_key_file:         "star_library.jhu.edu.key"
+ssl_certificate_key_content:      "{{ vault_ssl_certificate_key_content }}"
+ssl_certificate_chain_file:       "star_library.jhu.edu_interm.crt"
+ssl_certificate_chain_content:    "{{ vault_ssl_certificate_chain_content }}"
+ssl_certificate_chain_path:       "/etc/pki/tls/certs"

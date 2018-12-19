@@ -1,0 +1,24 @@
+{
+  "id" : "mod-authtoken-2.0.3",
+  "name" : "authtoken",
+  "provides" : [ {
+    "id" : "authtoken",
+    "version" : "2.0",
+    "handlers" : [ {
+      "methods" : [ "POST" ],
+      "pathPattern" : "/token"
+    }, {
+      "methods" : [ "POST" ],
+      "pathPattern" : "/refreshtoken"
+    }, {
+      "methods" : [ "POST" ],
+      "pathPattern" : "/refresh"
+    } ]
+  } ],
+  "filters" : [ {
+    "methods" : [ "*" ],
+    "pathPattern" : "/*",
+    "phase" : "auth",
+    "type" : "headers"
+  } ]
+}

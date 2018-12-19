@@ -1,0 +1,30 @@
+- name: adjust database config for folio   
+  hosts: db
+  become: true
+
+  tasks:
+
+  - name: remove local pg_hba entry for db_users
+    include_role:
+      name: postgres
+      tasks_from: pg_hba_entry
+    vars:
+      type: "local"
+      user: "{{ item.user }}"
+      database: "all"
+      method: "md5"
+      state: "absent"
+    with_items: "{{ db_users }}"
+
+  - name: add ip-based pg_hba entry for db_users 
+    include_role:
+      name: postgres
+      tasks_from: pg_hba_entry
+    vars:
+      type: "host"
+      user: "{{ item.user }}"
+      database: "all"
+      address:  "all"
+      method: "md5"
+      state: "present"
+    with_items: "{{ db_users }}"
