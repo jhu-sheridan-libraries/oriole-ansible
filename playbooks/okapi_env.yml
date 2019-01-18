@@ -1,0 +1,17 @@
+---
+# Set okapi envs
+- hosts: oriole
+
+  tasks:
+
+    - name: set envs
+      uri:
+        url: "{{external_okapi_url}}/_/env"
+        method: 'POST'
+        body:
+          name: "{{ item.key }}"
+          value: "{{ item.value}}"
+        body_format: 'json'
+        status_code: [200,201]
+      loop: "{{ lookup('dict', okapi_envs) }}"
+

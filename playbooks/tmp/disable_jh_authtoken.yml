@@ -1,0 +1,33 @@
+---
+- hosts: oriole
+
+  vars:
+    tenant: jh
+    mod_authtoken_id: mod-authtoken-2.0.3
+
+  tasks:
+
+    - name: get jh mod_authtoken id
+      uri:
+        url: "{{okapi_url}}/_/proxy/tenants/jh/interfaces/authtoken"
+      register: check_authtoken 
+
+    - name: Disable authtoken and dependancies
+      uri:
+        url: "{{ okapi_url }}/_/proxy/tenants/{{ tenant }}/install"
+        method: POST
+        body: 
+          - id: "{{ mod_authtoken_id }}"
+            action: "disable"
+        body_format: json
+      register: check_authtoken_disable
+      when: check_authtoken.json
+
+    - name: Enable authtoken and dependencies
+      uri:
+        url: "{{ okapi_url }}/_/proxy/tenants/{{ tenant }}/install"
+        method: POST
+        body: 
+          - id: "{{ mod_authtoken_id }}"
+            action: "enable"
+        body_format: json

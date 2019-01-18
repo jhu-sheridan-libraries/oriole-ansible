@@ -2,14 +2,58 @@
 # for defaults also see role/okapi/default/main.yml 
 # see apropriate vault_okapi.yml
 
+# todo oriole perms should be applied after bootstrap 
+# but I add in normail way
+# examples uses mod-users-bl which adds a large number of dependent modules
+admin_permissions:
+  - perms.all
+  - login.all
+  - users.all
+  - oriole.resources.admin
+  - oriole.libraries.admin
+  - oriole.subjects.admin
+
+
 # List of tenants
 folio_tenants:
+  - id: 'diku'
+    active: true
+    name: 'Datalogisk Institut'
+    description: 'Danish Library Technology Institute'
+    admin_user:
+      id: '1ad737b0-d847-11e6-bf26-cec0c932ce01'
+      username: 'diku_admin'
+      active: true
+      personal:
+        firstName: 'DIKU' 
+        lastName: 'ADMINITSTRATOR'
+      permissions: "{{ admin_permissions }}"
+      password: "{{ vault_folio_tenants.diku.admin_user.password }}"
   - id: 'jh'
+    active: false
     name: 'Johns Hopkins'
     description: 'Johns Hopkins Libraries'
+    admin_user:
+      id: 1a2537b3-d847-11e6-bf26-cec0c932ce01
+      username: admin
+      active: true
+      personal:
+        firstName: Administrator
+        lastName: Superuser
+        email: "admin@{{ hostname }}"
+      permissions:
+        - perms.all
+      password: "{{ vault_folio_tenants.jh.admin_user.password }}"
   - id: 'jh-test'
+    active: false
     name: 'Test Johns Hopkins'
     description: 'Test tenant for Johns Hopkins'
+    admin_user:
+      id: 1234567-d847-11e6-bf26-cec0c932ce01
+      username: admin
+      active: 1
+      personal:
+        lastName: TestSuperuser
 
 folio_user:      'folio'
 folio_group:     'folio'
@@ -17,22 +61,23 @@ folio_group:     'folio'
 okapi_user:      'okapi'
 okapi_group:     'okapi'
 
-okapi_version:    'latest'
+okapi_version:    '2.22.0'
 okapi_role:       'dev'
 okapi_port:       9130
 okapi_port_start: 9131
 okapi_port_end:   9661
-okapi_url:        "http://localhost:{{ okapi_port }}"
-okapi_host:       "localhost"
+okapi_host:       "okapi"
+okapi_url:        "http://{{okapi_host}}:{{ okapi_port }}"
+
+# external okapi_url on host
+external_okapi_port:       9130
+external_okapi_url:   "http://localhost:{{ external_okapi_port }}"
 
 okapi_conf_dir:   "/etc/folio/okapi"
 okapi_log_dir:    "/var/log/folio/okpai"
 #okapi_lib_dir:    "/usr/share/folio/okapi/lib"
 #okapi_data_dir:   "/var/lib/okapi"
 #okapi_pid_dir:    "/var/run/okapi"
-
-# change to 'postgres' for postgres backend
-#okapi_storage:   'inmemory'
 
 okapi_dockerurl:   'http://localhost:4243'
 
@@ -54,6 +99,7 @@ postgres_version_minor:     6
 pg_host:           "{{ ansible_default_ipv4.address }}"
 pg_port:           5432
 pg_admin_user:     "folio_admin"
+pg_admin_db:       "okapi_modules"
 pg_admin_password: "{{ vault_pg_admin_password }}"
 
 # allow user to login locally 
@@ -63,12 +109,23 @@ postgres_hba_entries:
     user:                   "postgres"
     address:                ""
     method:                 "peer"
-
+  - type:                   "host"
+    database:               "all"
+    user:                   "all"
+    address:                "0.0.0.0/0"
+    method:                 "md5"
 # postgres okapi
 okapi_storage:     'postgres'
 okapidb_user:      "okapi"
 okapidb_password:  "{{ vault_okapidb_password }}"
 okapidb_name:      "okapi"
+
+okapi_envs:
+  db.host: "10.0.2.15"
+  db.port: "{{ pg_port }}"
+  db.username: "{{ pg_admin_user }}"
+  db.password: "{{ pg_admin_password }}"
+  db.database: "{{ pg_admin_db }}"
 
 # docker
 okapi_logging_level: "INFO"
@@ -85,43 +142,63 @@ db_users:
 
 db_create_databases:    true
 db_databases:
-  - name:               "folio"
+  - name:               "{{ pg_admin_db }}"
     encoding:           "UTF-8"
-    owner:              "folio_admin"
+    owner:              "{{ pg_admin_user }}"
   - name:               "{{ okapidb_name }}"
     encoding:           "UTF-8"
     owner:              "{{ okapidb_user }}"
 
-mod_auth_modules:
-  - { index: 0, module: permissions-module }
-  - { index: 1, module: authtoken-module }
-  - { index: 2, module: login-module }
-
-admin_user:
-  username: diku_admin
-  password: admin
-  hash: 52DCA1934B2B32BEA274900A496DF162EC172C1E
-  salt: 483A7C864569B90C24A0A6151139FF0B95005B16
-  permissions: "\\\"perms.all\\\""
-  id: 1ad737b0-d847-11e6-bf26-cec0c932ce01
-  first_name: DIKU
-  last_name: ADMINISTRATOR
-
 # TODO write a new ansible role which loads the images from docker_hub
 
-folio_modules:
-  - name: mod-authtoken
-    version: '1.5.2'
-  - name: mod-configuration
-    version: '5.0.1'
-  - name: mod-permissions
-    version: '5.4.0'
+okapi_modules:
   - name: mod-users
     version: '15.3.0'
+    port: 10001
+    active: true 
+    auth: true
+    env: "{{ okapi_envs }}"
   - name: mod-login
     version: '4.6.0'
+    port: 10002
+    active: true 
+    auth: true
+    env: "{{ okapi_envs }}"
+  - name: mod-permissions
+    version: '5.4.0'
+    port: 10003
+    active: true 
+    auth: true
+    env: "{{ okapi_envs }}"
   - name: mod-authtoken
     version: '2.0.3'
+    port: 10006
+    active: true 
+    auth: false
+    env: "{{ okapi_envs }}"
+  - name: mod-configuration
+    version: '5.0.1'
+    port: 10005
+    active: true 
+    auth: false
+    env: "{{ okapi_envs }}"
+  - name: mod-users-bl
+    version: '4.3.2'
+    port: 10006
+    active: false
+    auth: false
+    env: "{{ okapi_envs }}"
+  - name: mod-password-validator
+    version: '1.0.1'
+    port: 10007
+    active: false 
+    auth: false
+    env: "{{ okapi_envs }}"
   - name: mod-oriole
-    version: '1.0.0'
-    docker_image: 'farooqsadiq/mod-oriole:1.0.0'
+    version: '1.0.1'
+    docker_image: 'farooqsadiq/mod-oriole:1.0.1'
+    port: 10050
+    active: true 
+    auth: false
+    env: "{{ okapi_envs }}"
+

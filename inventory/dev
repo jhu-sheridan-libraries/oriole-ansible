@@ -1,0 +1,8 @@
+---
+oriole:
+  hosts:
+    oriole-dev.library.jhu.edu
+  children:
+    dev:
+      hosts:
+        oriole-dev.library.jhu.edu

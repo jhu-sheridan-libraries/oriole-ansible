@@ -1,0 +1,44 @@
+---
+# Config okapi 
+- hosts: oriole
+
+    - name: check okapi mods 
+      uri:
+        url: "{{okapi_url}}/_/proxy/modules/{{ item.name }}-{{ item.version }}" 
+        method: 'GET'
+        status_code: [200,404]
+      register: check_mods 
+      loop: "{{ folio_modules|flatten(levels=1) }}"
+
+    - name: register okapi mods
+      uri:
+        url: "{{okapi_url}}/_/proxy/modules"
+        method: 'POST'
+        src: "descriptors/{{ item.item.name }}-{{ item.item.version }}.json"
+        body_format: 'json'
+        status_code: [200,201]
+      loop: "{{ check_mods.results|flatten(levels=1) }}"
+      when: item.status != 200
+
+    - name: check okapi discovery 
+      uri:
+        url: "{{okapi_url}}/_/discovery/modules/{{ item.name }}-{{ item.version }}" 
+        method: 'GET'
+        status_code: [200,404]
+      register: check_discovery 
+      loop: "{{ folio_modules|flatten(levels=1) }}"
+
+    - name: adding okapi discovery
+      uri:
+        url: "{{okapi_url}}/_/discovery/modules"
+        method: 'POST'
+        body: 
+          srvcId : "{{ item.item.name }}-{{ item.item.version }}"
+          instId : "{{ item.item.name }}"
+          url    : "http://{{ item.item.name }}:8081"
+        body_format: 'json'
+        status_code: [200,201]
+      loop: "{{ check_discovery.results|flatten(levels=1) }}"
+      when: item.status != 200
+
+ 

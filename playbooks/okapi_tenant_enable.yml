@@ -1,0 +1,31 @@
+---
+# Register okapi tenants
+- hosts: oriole
+
+  tasks:
+
+    - name: debug tenant
+      debug:
+        msg: "tenant {{ item }}"
+      loop: "{{ folio_tenants|flatten(levels=1) }}"
+      tags: indev
+
+    - name: check tenant registration
+      uri:
+        url: "{{external_okapi_url}}/_/proxy/tenants/{{ item.id }}" 
+        status_code: [200,404]
+      register: check_tenants 
+      loop: "{{ folio_tenants|flatten(levels=1) }}"
+
+    - name: register missing tenants
+      uri:
+        url: "{{external_okapi_url}}/_/proxy/tenants" 
+        method: 'POST'
+        body: 
+          id: "{{ item.item.id }}"
+          name: "{{ item.item.name }}"
+          description: "{{ item.item.description }}"
+        body_format: 'json'
+        status_code: [200,201]
+      loop: "{{ check_tenants.results|flatten(levels=1) }}"
+      when: item.status != 200

@@ -5,6 +5,7 @@
 project:        "oriole-ansible"
 version:        "0.1.0"
 login_user:     "deploy"
+app_name:       "oriole"
 
 # ssh vars
 ssh_port: 22
@@ -27,10 +28,16 @@ okapi_group:   "{{ okapi_user }}"
 
 postgres_version_major:     9
 postgres_version_minor:     6
-
+postgres_extra_packages:
+  - "postgresql-contrib"
+postgres_extensions:
+  - pgcrypto
 # 
 git_enablerepo: "ius"
 git_install_from_source: false
 git_packages: 
   - git2u
 
+jhu_dns_servers:
+  - 10.200.1.1
+  - 10.200.2.2

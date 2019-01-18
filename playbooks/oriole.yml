@@ -1,4 +1,8 @@
 ---
-- import_playbook: oriole_deploy.yml
-#- import_playbook: oriole_config.yml
+- import_playbook: okapi_deploy.yml
+- import_playbook: okapi_env.yml
+- import_playbook: okapi_mods.yml
+- import_playbook: okapi_tenant_enable.yml
+- import_playbook: okapi_tenant_mods.yml
+- import_playbook: okapi_tenant_admin.yml
 

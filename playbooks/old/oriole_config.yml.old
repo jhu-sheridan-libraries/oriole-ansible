@@ -1,0 +1,79 @@
+---
+# Config okapi modules
+- hosts: oriole
+
+  tasks:
+   - name: check jh okapi version 
+      uri:
+        url: "{{okapi_url}}/_/proxy/tenants/jh/modules/okapi-{{ okapi_version }}"
+        method: 'GET'
+        status_code: [200,404]
+      register: check_jh_okapi 
+
+    - name: enable jh okapi 
+      uri:
+        url: "{{okapi_url}}/_/proxy/tenants/jh/modules"
+        method: 'POST'
+        body: 
+          id : "okapi-{{ okapi_version }}"
+        body_format: 'json'
+        status_code: [200,201]
+      when: check_jh_okapi.status != 200
+
+# Configure superuser 
+# Modules required: mod-authtoken, mod-users, mod-login, mod-permissions, mod-users-bl
+# 1. Disable mod-authtoken
+# 2. Create records in mod-users, mod-login, mod-permissions
+# 3. Re-enable mod-authtoken
+# 4. Assign all permissions to the superuser
+
+    - name: check jh admin
+      uri:
+        url: "{{okapi_url}}/users/{{admin_user.id}}"
+        method: 'GET'
+        status_code: [200,404]
+      register: check_jh_adminuser
+
+    - name: get jh mod_authtoken id
+      uri:
+        url: "{{okapi_url}}/_/proxy/tenants/jh/interfaces/mod_authtoken"
+        method: 'GET'
+      register: check_jh_authtoken 
+      when: check_jh_adminuser.status != 200
+
+    - name: disable jh mod_authtoken
+      uri:
+        url: "{{okapi_url}}/_/proxy/tenants/jh/install/{{ check_jh_authtoken[id] }}"
+        method: 'post'
+        body: 
+          disable:
+        body_format: 'json'
+      register: check_jh_disable_authtoken
+      when: check_jh_adminuser.status != 200
+
+    - name: create jh adminuser
+      uri:
+        url: "{{okapi_url}}/users"
+        method: 'post'
+        body: "{{ admin_user }}"
+        body_format: 'json'
+        status_code: [200,201]
+      when: check_jh_adminuser.status != 200
+
+    - name: reenable jh mod-authtoken
+      uri:
+        url: "{{okapi_url}}/_/proxy/tenants/jh/install/{{ check_jh_authtoken[id] }}"
+        method: 'post'
+        body: 
+          enable:
+        body_format: 'json'
+      when: check_jh_disable_authtoken != 200
+      
+      #- name: create a admin_user login
+      #- name: create a admin_user permissions
+      #- name: re-enable mod-authtoken
+      #- name: login as adminuser
+      #- name: get list of permissions
+      #- name: assign permissions
+      
+     

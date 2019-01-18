@@ -1,0 +1,127 @@
+---
+# Create tenant admin users
+- hosts: oriole
+
+  vars:
+    mod_authtoken_id: mod-authtoken-2.0.3
+
+  tasks:
+    - name: get active tenents
+      set_fact:
+        active_tenants: "{{folio_tenants|selectattr('active')|list}}" 
+      tags: indev
+
+    - name: check tenent mod-authtoken
+      uri:
+        url: "{{ external_okapi_url }}/_/proxy/tenants/{{ item.id }}/interfaces/authtoken"
+      register: check_tenant_auth_mod
+      loop: "{{ active_tenants|flatten(levels=1) }}"
+      tags: indev
+
+    - name: Disable tenant mod-authtoken
+      uri:
+        url: "{{ external_okapi_url }}/_/proxy/tenants/{{ item.item.id }}/install"
+        method: POST
+        body: 
+          - id: "{{ item.json.0.id }}"
+            action: "disable"
+        body_format: json
+      register: check_tenant_auth_disabled
+      when: item.json.0 is defined
+      loop: "{{ check_tenant_auth_mod.results|selectattr('status', 'equalto',200) | list }}"
+      tags: indev
+
+    - name: Check tenant admin user
+      uri:
+        url: "{{ external_okapi_url }}/users?query=username%3d%3d{{ item.admin_user.username }}"
+        headers:
+          Accept: "application/json, text/plain"
+          X-Okapi-Tenant: "{{ item.id }}"
+        body_format: json
+        status_code: [200]
+      register: check_tenant_admin
+      loop: "{{ active_tenants|flatten(levels=1) }}"
+      tags: indev
+
+    - name: Create tenant admin user
+      uri:
+        url: "{{ external_okapi_url }}/users"
+        method: 'POST'
+        headers:
+          Accept: "application/json, text/plain"
+          X-Okapi-Tenant: "{{ item.item.id }}"
+        body: 
+          id: "{{ item.item.admin_user.id }}"
+          username: "{{ item.item.admin_user.username }}"
+          personal: "{{ item.item.admin_user.personal }}"
+          active: "{{ item.item.admin_user.active }}"
+        body_format: json
+        status_code: 201
+        register: check_tenant_admin_created
+      loop: "{{ check_tenant_admin.results|selectattr('json.totalRecords', 'equalto' , 0) | list }}"
+
+    - name: Check tenant admin login
+      uri:
+        url: "{{ external_okapi_url }}/authn/credentials?query=userId%3d%3d{{ item.admin_user.id }}"
+        headers:
+          Accept: "application/json, text/plain"
+          X-Okapi-Tenant: "{{ item.id }}"
+        status_code: [200,400, 404]
+      register: check_tenant_login
+      loop: "{{ active_tenants|flatten(levels=1) }}"
+
+    - name: Create tenant admin login
+      uri:
+        url: "{{ external_okapi_url }}/authn/credentials"
+        method: 'POST'
+        headers:
+          Accept: "application/json, text/plain"
+          X-Okapi-Tenant: "{{ item.item.id }}"
+        body: 
+          userId: "{{ item.item.admin_user.id }}"
+          password: "{{ item.item.admin_user.password }}"
+        body_format: json
+        status_code: 201
+        register: check_tenant_login_created
+      loop: "{{ check_tenant_login.results|selectattr('json.totalRecords', 'equalto' , 0) | list }}"
+
+    - name: Check tenant perms
+      uri:
+        url: "{{ external_okapi_url }}/perms/users?query=userId%3d%3d{{ item.admin_user.id }}"
+        headers:
+          Accept: "application/json, text/plain"
+          X-Okapi-Tenant: "{{ item.id }}"
+        body_format: json
+        status_code: [200, 404]
+      register: check_tenant_admin_perms
+      loop: "{{ active_tenants|flatten(levels=1) }}"
+
+    - name: Create tenant perms
+      uri:
+        url: "{{ external_okapi_url }}/perms/users"
+        method: 'POST'
+        headers:
+          Accept: "application/json, text/plain"
+          X-Okapi-Tenant: "{{ item.item.id }}"
+        body: 
+          userId: "{{ item.item.admin_user.id }}"
+          permissions: "{{ item.item.admin_user.permissions }}"
+        body_format: json
+        status_code: 201
+      loop: "{{ check_tenant_admin_perms.results|selectattr('json.totalRecords', 'equalto' , 0) | list }}"
+
+    - name: Enable tenant mod-authtoken
+      uri:
+        url: "{{ external_okapi_url }}/_/proxy/tenants/{{ item.id }}/install"
+        method: POST
+        body: 
+          - id: "{{ mod_authtoken_id }}"
+            action: "enable"
+        body_format: json
+      register: check_tenant_auth_enabled
+      loop: "{{ active_tenants|flatten(levels=1) }}"
+
+      #- name: login as adminuser (bl_users)
+      #- name: get list of permissions
+      #- name: assign permissions
+

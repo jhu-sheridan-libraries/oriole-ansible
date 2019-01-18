@@ -1,4 +1,4 @@
----
+--
 # Deploy okapi and modules for okapi
 - hosts: oriole
 
@@ -42,12 +42,18 @@
         src: log4j.properties.j2
         dest: "{{ okapi_log4j_config }}"
         #notify: restart okapi container
+        
+
+    - name: create backend docker network
+      become: yes
+      docker_network:
+        name: backend
 
     - name: create the okapi container
       become: yes
       docker_container: 
         name:  "okapi"
-        image: "folioorg/okapi:2.22.0"
+        image: "folioorg/okapi:{{ okapi_version }}"
         env:
           JAVA_OPTIONS: |
             -Xmx256m
@@ -61,14 +67,19 @@
         exposed_ports:
           - '{{okapi_port_start}}-{{okapi_port_end}}'
           - "{{okapi_port}}"
-        ports: 
+        published_ports: 
           - "{{okapi_port}}:{{okapi_port}}"
+        dns_servers: "{{ jhu_dns_servers }}"
+        domainname: "{{ domainname }}"
+        hostname: "okapi"
+        networks:
+          - name: backend
         volumes:
           - "{{ okapi_conf_dir }}:{{okapi_conf_dir}}"
           - "{{ okapi_log_dir }}:{{ okapi_log_dir }}"
         command: "{{ okapi_role }}" 
 
-    - name: create and start folio contaienrs
+    - name: create okapi module contaienrs
       become: yes
       docker_container: 
         name:  "{{ item.name }}"
@@ -77,6 +88,17 @@
           JAVA_OPTIONS: |
             -Xmx256m
             -Dlogl=DEGUG
+            -Dloglevel=DEBUG
+            -Dstorage=postgres
+            -Dpostgres_host={{ pg_host }}
+            -Dpostgres_port={{ pg_port }}
+            -Dpostgres_user={{ okapidb_user }}
+            -Dpostgres_password={{ okapidb_password }}
+            -Dpostgres_database={{ okapidb_name }}
         exposed_ports: 8081
-      with_items: "{{ folio_modules }}"
-
+        dns_servers: "{{ jhu_dns_servers }}"
+        domainname: "{{ domainname }}"
+        hostname: "{{ item.name }}"
+        networks:
+          - name: backend
+      loop: "{{ folio_modules|flatten(levels=1) }}"
