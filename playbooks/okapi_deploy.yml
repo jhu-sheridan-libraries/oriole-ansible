@@ -3,11 +3,14 @@
 - hosts: oriole
 
   tasks:
+    - name: get active modules
+      set_fact:
+        active_modules: "{{okapi_modules|selectattr('active')|list}}"
 
     - name: install python pip docker package
       become: yes
       pip:
-        name: docker 
+        name: docker
 
     - name: db privilages 
       postgresql_privs:
@@ -48,10 +51,12 @@
       become: yes
       docker_network:
         name: backend
+        driver_options:
+          com.docker.network.bridge.name: "{{ docker_network_name }}"
 
     - name: create the okapi container
       become: yes
-      docker_container: 
+      docker_container:
         name:  "okapi"
         image: "folioorg/okapi:{{ okapi_version }}"
         restart_policy: 'always'
@@ -60,7 +65,7 @@
             -Xmx256m
             -Dloglevel=DEBUG
             -Dstorage=postgres
-            -Dpostgres_host={{ pg_host }}
+            -Dpostgres_host={{ hostname }}.{{ domainname }}
             -Dpostgres_port={{ pg_port }}
             -Dpostgres_user={{ okapidb_user }}
             -Dpostgres_password={{ okapidb_password }}
@@ -92,4 +97,4 @@
         hostname: "{{ item.name }}"
         networks:
           - name: backend
-      loop: "{{ okapi_modules|flatten(levels=1) }}"
+      loop: "{{ active_modules|flatten(levels=1) }}"

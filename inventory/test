@@ -1,8 +1,17 @@
 ---
-oriole:
+all:
   hosts:
     oriole-test.library.jhu.edu
   children:
     test:
+      hosts:
+        oriole-test.library.jhu.edu
+    okapi:
+      hosts:
+        oriole-test.library.jhu.edu
+    oriole:
+      hosts:
+        oriole-test.library.jhu.edu
+    db:
       hosts:
         oriole-test.library.jhu.edu

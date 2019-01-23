@@ -1,8 +1,18 @@
 ---
-oriole:
+all:
   hosts:
     oriole-dev.library.jhu.edu
   children:
     dev:
       hosts:
         oriole-dev.library.jhu.edu
+    okapi:
+      hosts:
+        oriole-dev.library.jhu.edu
+    oriole:
+      hosts:
+        oriole-dev.library.jhu.edu
+    db:
+      hosts:
+        oriole-dev.library.jhu.edu
+ 

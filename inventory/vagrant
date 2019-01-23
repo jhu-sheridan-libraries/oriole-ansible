@@ -11,11 +11,11 @@ all:
       aliases:
         - 'oriole-vagrant'
         - 'oriole-vagrant.library.jhu.edu'
-        - 'databases-vagant.library.jhu.edu'
+        - 'databases-vagrant.library.jhu.edu'
   children:
     dev:
       hosts:
-        oriole-vagant.test: 
+        oriole-vagrant.test: 
     okapi:
       hosts:
         oriole-vagrant.test: 

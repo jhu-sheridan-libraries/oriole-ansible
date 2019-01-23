@@ -121,11 +121,11 @@ okapidb_password:  "{{ vault_okapidb_password }}"
 okapidb_name:      "okapi"
 
 okapi_envs:
-  db.host: "10.0.2.15"
-  db.port: "{{ pg_port }}"
-  db.username: "{{ pg_admin_user }}"
-  db.password: "{{ pg_admin_password }}"
-  db.database: "{{ pg_admin_db }}"
+  'db.host':     "{{ hostname }}.{{ domainname }}"
+  'db.port':     "{{ pg_port }}"
+  'db.username': "{{ pg_admin_user }}"
+  'db.password': "{{ pg_admin_password }}"
+  'db.database': "{{ pg_admin_db }}"
 
 # docker
 okapi_logging_level: "INFO"
