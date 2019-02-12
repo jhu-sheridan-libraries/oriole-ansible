@@ -32,3 +32,13 @@ ansible oriole -m raw --become -a "docker network inspect --format={%raw%}'{{ran
 
 Get the oriole resources
  curl -D - -w '\n' -H 'X-Okapi-Tenant: diku' http://oriole-dev:9130/oriole-resources
+ 
+Upgrade mod-oriole
+ansible -i inventory/test  oriole -m raw --become -a "docker stop mod-oriole "
+ansible -i inventory/test  oriole -m raw --become -a "docker rm mod-oriole "
+curl -i -w '\n' -X DELETE http://oriole-test.library.jhu.edu:9130/_/proxy/tenants/diku/modules/mod-oriole-1.0.1
+curl -i -w '\n' -X DELETE http://oriole-test.library.jhu.edu:9130/_/proxy/modules/mod-oriole-1.0.1
+update okapi.yml inventory 1.0.2
+git mv playboooks/file/descriptors/mod-oriole-1.0.1.json layboooks/file/descriptors/mod-oriole-1.0.2.json
+update the new discriptor
+ansible-playbook -i inventory/test playbooks/oriole.yml -v

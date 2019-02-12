@@ -3,15 +3,31 @@
 - hosts: oriole
 
   tasks:
+    
+    - name: test envs
+      uri:
+        url: "{{external_okapi_url}}/_/env/{{ item.key }}"
+        register: check_okapi_envs
+        status_code: [200,404]
+      loop: "{{ lookup('dict', okapi_envs) }}"
+
+    - name: update envs
+      uri:
+        url: "{{external_okapi_url}}/_/env/{{ item.item.key }}"
+        method: 'PATCH'
+        body:
+          value: "{{ item.item.value}}"
+        body_format: 'json'
+        status_code: [200,201]
+      loop: "{{ check_okapi_envs.results|selectattr('status', 'equalto',200) | list }}"
 
     - name: set envs
       uri:
         url: "{{external_okapi_url}}/_/env"
         method: 'POST'
         body:
-          name: "{{ item.key }}"
-          value: "{{ item.value}}"
+          name: "{{ item.item.key }}"
+          value: "{{ item.item.value}}"
         body_format: 'json'
         status_code: [200,201]
-      loop: "{{ lookup('dict', okapi_envs) }}"
-
+      loop: "{{ check_okapi_envs.results|selectattr('status', 'equalto',400) | list }}"
