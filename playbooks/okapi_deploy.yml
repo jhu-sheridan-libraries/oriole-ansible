@@ -2,6 +2,12 @@
 # Deploy okapi and modules for okapi
 - hosts: oriole
 
+  vars:
+    docker_etc_hosts: >
+     {
+      "{{ hostname }}.{{ domainname}}": "10.0.2.15"
+     }
+
   tasks:
     - name: get active modules
       set_fact:
@@ -51,8 +57,6 @@
       become: yes
       docker_network:
         name: backend
-        driver_options:
-          com.docker.network.bridge.name: "{{ docker_network_name }}"
 
     - name: create the okapi container
       become: yes
@@ -77,6 +81,7 @@
         published_ports: 
           - "{{external_okapi_port}}:{{okapi_port}}"
         dns_servers: "{{ jhu_dns_servers }}"
+        etc_hosts: "{{ docker_etc_hosts }}"
         hostname: "okapi"
         networks:
           - name: backend
@@ -94,6 +99,7 @@
         env: "{{ item.env }}"
         exposed_ports: 8081
         dns_servers: "{{ jhu_dns_servers }}"
+        etc_hosts: "{{ docker_etc_hosts }}"
         hostname: "{{ item.name }}"
         networks:
           - name: backend
