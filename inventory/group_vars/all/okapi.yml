@@ -196,7 +196,7 @@ okapi_modules:
     env: "{{ okapi_envs }}"
   - name: mod-oriole
     version: '1.0.2'
-    docker_image: 'farooqsadiq/mod-oriole:1.0.2'
+    docker_image: 'jhulibraries/mod-oriole:1.0.2'
     port: 10050
     active: true 
     auth: false
