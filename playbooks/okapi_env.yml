@@ -7,8 +7,8 @@
     - name: test envs
       uri:
         url: "{{external_okapi_url}}/_/env/{{ item.key }}"
-        register: check_okapi_envs
         status_code: [200,404]
+      register: check_okapi_envs
       loop: "{{ lookup('dict', okapi_envs) }}"
 
     - name: update envs
