@@ -17,18 +17,17 @@
         {
           "methods": [ "POST" ],
           "pathPattern": "/oriole-resources",
-          "permissionsRequired": [ "oriole.resources.item.post" ]
+          "permissionsRequired": []
         },
         {
           "methods": [ "PUT" ],
           "pathPattern": "/oriole-resources/{id}",
-          "permissionsRequired": [ "oriole.item.put" ],
-          "permissionsRequired": [ "oriole.resources.item.put" ]
+          "permissionsRequired": []
         },
         {
           "methods": [ "DELETE" ],
           "pathPattern": "/oriole-resources/{id}",
-          "permissionsRequired": [ "oriole.resources.item.delete" ]
+          "permissionsRequired": []
         }
       ]
     },
@@ -39,33 +38,33 @@
         {
           "methods": [ "GET" ],
           "pathPattern": "/oriole-libraries",
-          "permissionsRequired": [ "oriole.libraries.collection.get" ]
+          "permissionsRequired": []
         },
         {
           "methods": [ "GET" ],
           "pathPattern": "/oriole-libraries/{id}",
-          "permissionsRequired": [ "oriole.libraries.item.get" ]
+          "permissionsRequired": []
         },
         {
           "methods": [ "POST" ],
           "pathPattern": "/oriole-libraries",
-          "permissionsRequired": [ "oriole.libraries.item.post" ]
+          "permissionsRequired": []
         },
         {
           "methods": [ "PUT" ],
           "pathPattern": "/oriole-libraries/{id}",
-          "permissionsRequired": [ "oriole.libraries.item.put" ]
+          "permissionsRequired": []
         },
         {
           "methods": [ "DELETE" ],
           "pathPattern": "/oriole-libraries/{id}",
-          "permissionsRequired": [ "oriole.libraries.item.delete" ]
+          "permissionsRequired": []
 
         },
         {
           "methods": [ "DELETE" ],
           "pathPattern": "/oriole-libraries",
-          "permissionsRequired": [ "oriole.libraries.collection.delete" ]
+          "permissionsRequired": []
         }
       ]
     },
@@ -76,33 +75,33 @@
         {
           "methods": [ "GET" ],
           "pathPattern": "/oriole-subjects",
-          "permissionsRequired": [ "oriole.subjects.collection.get" ]
+          "permissionsRequired": []
         },
         {
           "methods": [ "GET" ],
           "pathPattern": "/oriole-subjects/{id}",
-          "permissionsRequired": [ "oriole.subjects.item.get" ]
+          "permissionsRequired": []
         },
         {
           "methods": [ "POST" ],
           "pathPattern": "/oriole-subjects",
-          "permissionsRequired": [ "oriole.subjects.item.post" ]
+          "permissionsRequired": []
         },
         {
           "methods": [ "PUT" ],
           "pathPattern": "/oriole-subjects/{id}",
-          "permissionsRequired": [ "oriole.subjects.item.put" ]
+          "permissionsRequired": []
         },
         {
           "methods": [ "DELETE" ],
           "pathPattern": "/oriole-subjects/{id}",
-          "permissionsRequired": [ "oriole.subjects.item.delete" ]
+          "permissionsRequired": []
 
         },
         {
           "methods": [ "DELETE" ],
           "pathPattern": "/oriole-subjects",
-          "permissionsRequired": [ "oriole.subjects.collection.delete" ]
+          "permissionsRequired": []
         }
       ]
     },
