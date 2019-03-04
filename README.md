@@ -11,7 +11,7 @@ ansible oriole -m uri -a 'method="DELETE" url=http://localhost:9130/_/proxy/tena
 # Usefull ansible commands
 
 Create  vagrant and oriale
-``` 
+```
 time vagrant up && time ansible-playbook main.yml  -v
 ```
 List docker contains
@@ -21,9 +21,9 @@ Get tenants, modules, discovery, envs
 ansible oriole --become  -m uri -a 'url=http://localhost:9130/_/proxy/tenants'
 ansible oriole --become  -m uri -a 'url=http://localhost:9130/_/proxy/modules'
 ansible oriole --become  -m uri -a 'url=http://localhost:9130/_/discovery'
-ansible oriole -m uri -a "url=http://localhost:9130/_/env" 
+ansible oriole -m uri -a "url=http://localhost:9130/_/env"
 
-View docker logs 
+View docker logs
 ansible oriole -m raw --become -a "docker logs --tail=50  okapi"
 ansible oriole -m raw --become -a "docker logs --tail=50  okapi"
 
@@ -32,8 +32,9 @@ ansible oriole -m raw --become -a "docker network inspect --format={%raw%}'{{ran
 
 Get the oriole resources
  curl -D - -w '\n' -H 'X-Okapi-Tenant: diku' http://oriole-dev:9130/oriole-resources
- 
+
 Upgrade mod-oriole
+```
 ansible -i inventory/test  oriole -m raw --become -a "docker stop mod-oriole "
 ansible -i inventory/test  oriole -m raw --become -a "docker rm mod-oriole "
 curl -i -w '\n' -X DELETE http://oriole-test.library.jhu.edu:9130/_/proxy/tenants/diku/modules/mod-oriole-1.0.1
@@ -42,3 +43,21 @@ update okapi.yml inventory 1.0.2
 git mv playboooks/file/descriptors/mod-oriole-1.0.1.json layboooks/file/descriptors/mod-oriole-1.0.2.json
 update the new discriptor
 ansible-playbook -i inventory/test playbooks/oriole.yml -v
+
+## Upgrade oriole
+
+Delete the old version
+
+```
+curl -D - -w '\n' http://oriole-dev.library.jhu.edu:9130/_/proxy/modules
+curl -D - -w '\n' http://oriole-dev.library.jhu.edu:9130/_/proxy/tenants/diku/modules
+curl -X DELETE -D - -w '\n' http://oriole-dev.library.jhu.edu:9130/_/proxy/tenants/diku/modules/mod-oriole-1.0.2
+curl -D - -w '\n' http://oriole-dev.library.jhu.edu:9130/_/proxy/tenants/diku/modules
+curl -X DELETE -D - -w '\n' http://oriole-dev.library.jhu.edu:9130/_/proxy/modules/mod-oriole-1.0.2
+curl -D - -w '\n' http://oriole-dev.library.jhu.edu:9130/_/proxy/modules
+```
+
+Deploy the new oriole version with ansible.
+```
+ansible-playbook -i inventory/test playbooks/oriole.yml -v
+``` 
