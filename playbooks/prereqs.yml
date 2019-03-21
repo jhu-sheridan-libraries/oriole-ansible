@@ -4,8 +4,10 @@
   roles:
   - { role: repo-epel, tags: ['docker'],   become: true }
   - { role: pip,       tags: ['docker'],   become: true }
+  - { role: nginx,     tags: ['nginx'],    become: true }
   - { role: repo-ius,  tags: ['git'],      become: true }
   - { role: git,       tags: ['git'],      become: true }
   - { role: java,      tags: ['java'],     become: true }
   - { role: docker,    tags: ['docker'],   become: true }
   - { role: postgres,  tags: ['postgres'], become: true }
+  - { role: firewalld,  tags: ['firewalld'], become: true }

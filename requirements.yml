@@ -30,9 +30,16 @@
 - src: https://github.com/dheles/postgres-ansible-role
   name: postgres
 
+- src: https://github.com/dheles/firewalld-ansible-role
+  name: firewalld
+
 - src: https://github.com/farooqsadiq/ansible-role-ius-repo.git
   name: repo-ius
 
 - src: https://github.com/geerlingguy/ansible-role-git.git
   version: 2.0.4
   name: git
+
+- src: https://github.com/geerlingguy/ansible-role-nginx.git
+  version: 2.6.2
+  name: nginx

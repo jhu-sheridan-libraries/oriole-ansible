@@ -20,6 +20,10 @@ docker_edition: 'ce'
 docker_package_state: present
 docker_install_compose: true 
 
+# No DNS entry for hostname for -dev server. resolve to docker-host
+docker_etc_hosts:
+  "{{ hostname }}.{{ domainname}}": "10.0.2.15"
+
 # TODO testing-backend only has one user so just use it.
 folio_user:  folio 
 folio_group: "{{ folio_user }}"
@@ -41,3 +45,41 @@ git_packages:
 jhu_dns_servers:
   - 10.200.1.1
   - 10.200.2.2
+
+docker_network_name: dockernet
+
+firewalld_ports:
+  - port: "{{ okapi_port }}"
+    protocol: tcp
+    state: enabled
+
+firewalld_services:
+  - zone: public
+    service: http
+    permanent: true
+    state: enabled
+  - zone: public
+    service: https
+    permanent: true
+    state: enabled
+  - zone: public
+    service: ssh
+    permanent: true
+    state: enabled
+  - zone: public
+    service: postgresql
+    permanent: true
+    state: enabled
+
+    #firewalld_richrules:
+    #- rule: 'rule family="ipv4" source ipset="whitelist" port port="8080" protocol="tcp" log prefix="port-access-allowed" level="info" limit value="1/m" accept'
+    #state: enabled
+    #
+    #- "69.50.232.54"
+    #
+    #https://github.com/moby/moby/issues/16137
+    #systemctl stop NetworkManager.service
+    #firewall-cmd --permanent --zone=trusted --change-interface=docker0
+    #systemctl start NetworkManager.service
+    #nmcli connection modify docker0 connection.zone trusted
+    #systemctl restart docker.service

@@ -1,5 +1,5 @@
 # used by the okapi role
-# for defaults also see role/okapi/default/main.yml 
+# for defaults also see role/okapi/default/main.yml
 # see apropriate vault_okapi.yml
 
 # todo oriole perms should be applied after bootstrap 
@@ -25,7 +25,7 @@ folio_tenants:
       username: 'diku_admin'
       active: true
       personal:
-        firstName: 'DIKU' 
+        firstName: 'DIKU'
         lastName: 'ADMINITSTRATOR'
       permissions: "{{ admin_permissions }}"
       password: "{{ vault_folio_tenants.diku.admin_user.password }}"
@@ -91,18 +91,18 @@ okapi_log4j_config: "{{ okapi_conf_dir }}/log4j.properties"
 okapi_java_opts: []
 
 # postgres
-# force install from postgress repo 
+# force install from postgress repo
 postgres_version_major:     9
 postgres_version_minor:     6
 
 
 pg_host:           "{{ ansible_default_ipv4.address }}"
-pg_port:           5432
+pg_port:           "5432"
 pg_admin_user:     "folio_admin"
 pg_admin_db:       "okapi_modules"
 pg_admin_password: "{{ vault_pg_admin_password }}"
 
-# allow user to login locally 
+# allow user to login locally
 postgres_hba_entries:
   - type:                   "local"
     database:               "all"
@@ -154,51 +154,51 @@ db_databases:
 okapi_modules:
   - name: mod-users
     version: '15.3.0'
-    port: 10001
-    active: true 
+    port: '10001'
+    active: true
     auth: true
     env: "{{ okapi_envs }}"
   - name: mod-login
     version: '4.6.0'
-    port: 10002
-    active: true 
+    port: '10002'
+    active: true
     auth: true
     env: "{{ okapi_envs }}"
   - name: mod-permissions
     version: '5.4.0'
-    port: 10003
-    active: true 
+    port: '10003'
+    active: true
     auth: true
     env: "{{ okapi_envs }}"
   - name: mod-authtoken
     version: '2.0.3'
-    port: 10006
-    active: true 
+    port: '10006'
+    active: true
     auth: false
     env: "{{ okapi_envs }}"
   - name: mod-configuration
     version: '5.0.1'
-    port: 10005
-    active: true 
+    port: '10005'
+    active: true
     auth: false
     env: "{{ okapi_envs }}"
   - name: mod-users-bl
     version: '4.3.2'
-    port: 10006
+    port: '10006'
     active: false
     auth: false
     env: "{{ okapi_envs }}"
   - name: mod-password-validator
     version: '1.0.1'
-    port: 10007
-    active: false 
+    port: '10007'
+    active: false
     auth: false
     env: "{{ okapi_envs }}"
   - name: mod-oriole
     version: '1.0.2'
-    docker_image: 'jhulibraries/mod-oriole:1.0.2'
-    port: 10050
-    active: true 
+    docker_image: 'jhulibraries/mod-oriole:1.0.5'
+    port: '10050'
+    active: true
     auth: false
     env: "{{ okapi_envs }}"
 
