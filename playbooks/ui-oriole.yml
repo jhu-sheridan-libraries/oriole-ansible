@@ -1,0 +1,24 @@
+- name: install oriole prereqs
+  hosts: okapi 
+
+  tasks:
+    - name: create ui-patron root
+      become: true
+      file:
+        path: "{{ ui_patron.root }}"
+        owner: "{{ login_user }}"
+        group: "{{ login_user }}"
+        state: directory
+        mode: 0755
+
+    - name: create ui-patron index file
+      become: true
+      copy:
+        dest: "{{ ui_patron.root }}/{{ ui_patron.index }}"
+        owner: "{{ login_user }}"
+        group: "{{ login_user }}"
+        content: |
+          <h1>Patron UI<h1> 
+
+  roles:
+  - { role: nginx,     tags: ['nginx'],    become: true }

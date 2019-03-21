@@ -11,16 +11,6 @@
       register: check_okapi_envs
       loop: "{{ lookup('dict', okapi_envs) }}"
 
-    - name: update envs
-      uri:
-        url: "{{external_okapi_url}}/_/env/{{ item.item.key }}"
-        method: 'PATCH'
-        body:
-          value: "{{ item.item.value}}"
-        body_format: 'json'
-        status_code: [200,201]
-      loop: "{{ check_okapi_envs.results|selectattr('status', 'equalto',200) | list }}"
-
     - name: set envs
       uri:
         url: "{{external_okapi_url}}/_/env"

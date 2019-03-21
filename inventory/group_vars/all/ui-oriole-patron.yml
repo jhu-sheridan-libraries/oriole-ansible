@@ -1,0 +1,32 @@
+ssl_self_sign_cert:               false
+#ssl_provided_cert:                false # certs on server by ops
+# cat ssl_certificate_file ssl_certificate_chain_file > ssl_certificate_bundled_file
+#ssl_certificate_file:             "star_library.jhu.edu_bundle.crt"
+#ssl_certificate_key_file:         "star_library.jhu.edu.key"
+#ssl_certificate_chain_path:       "/etc/pki/tls/certs"
+
+ui_patron:
+  hostname: "databases-{{ environ }}.{{ domainname}}"
+  root:     "/opt/ui_patron"
+  index:    "index.html"
+  
+  #ui_staff:
+  #hostname:  "{{ hostname }}.{{ domainname }}"
+  #root:     "/usr/share/nginx/ui_staff"
+
+  #vhost:
+  #- server_name: "{{ ui_patron.hostname }}"
+  #  root: "/usr/share/nginx/ui_patron"  
+  #- server_name: "{{ui_staff.hostname }}"
+
+nginx_vhosts: 
+  - listen: "80"
+    server_name: "{{ ui_patron.hostname }}"
+    extra_parameters: |
+      location / {
+         root {{ui_patron.root}};
+         index {{ ui_patron.index }};
+      }
+    filename: "{{ ui_patron.hostname }}.conf"
+    state: "present"
+    #template: "{{ nginx_vhost_template }}"
