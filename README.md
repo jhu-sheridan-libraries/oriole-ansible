@@ -69,3 +69,18 @@ Deploy the new oriole version with ansible.
 ```
 ansible-playbook -i inventory/test playbooks/oriole.yml -v
 ```
+
+# Centos Docker Network
+ 
+ncli device status
+
+TODO
+
+- turn off NetworkManager not recommended for docker
+  systemctl stop NetworkManager.service
+  systemctl disable NetworkManager.service
+- see ncli device status (docker0 and dockernet)
+  firewall-cmd --permanent --zone=trusted --add-interface=docker0
+  firewall-cmd --permanent --zone=trusted --add-interface=dockernet
+  restart docker
+

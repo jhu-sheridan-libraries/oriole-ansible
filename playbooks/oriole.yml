@@ -5,4 +5,3 @@
 - import_playbook: okapi_tenant_enable.yml
 - import_playbook: okapi_tenant_mods.yml
 - import_playbook: okapi_tenant_admin.yml
-

@@ -21,8 +21,9 @@ docker_package_state: present
 docker_install_compose: true 
 
 # No DNS entry for hostname for -dev server. resolve to docker-host
-docker_etc_hosts:
-  "{{ hostname }}.{{ domainname}}": "10.0.2.15"
+# See https://stackoverflow.com/questions/24319662/from-inside-of-a-docker-container-how-do-i-connect-to-the-localhost-of-the-mach/52858101#52858101
+
+docker_etc_hosts: {}
 
 # TODO testing-backend only has one user so just use it.
 folio_user:  folio 

@@ -4,7 +4,8 @@ all:
     oriole-dev.test:
       state: present # if =absent vagrant will ignore
       vagrant_box_image: 'centos/7'
-      vagrant_box_version: '1809.01' # latest 7.5.1804
+      vagrant_box_version: '1902.01' # latest 7.6.1811
+      # vagrant_box_version: '1809.01' #  7.5.1804
       cpus: 2
       memory: 4096 
       ansible_ip: '10.11.18.111'

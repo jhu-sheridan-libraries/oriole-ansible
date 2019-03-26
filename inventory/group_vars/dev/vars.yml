@@ -9,3 +9,5 @@ login_user_passphrase:  "{{ vault_login_user_passphrase }}"
 hostname:               "{{ app_name }}-{{environ}}"
 domainname:             "library.jhu.edu"
 
+docker_etc_hosts:
+  "oriole-dev.library.jhu.edu": "{{ ansible_default_ipv4.address }}"
