@@ -10,14 +10,10 @@ ui_patron:
   root:     "/opt/ui_patron"
   index:    "index.html"
   
-  #ui_staff:
-  #hostname:  "{{ hostname }}.{{ domainname }}"
-  #root:     "/usr/share/nginx/ui_staff"
-
-  #vhost:
-  #- server_name: "{{ ui_patron.hostname }}"
-  #  root: "/usr/share/nginx/ui_patron"  
-  #- server_name: "{{ui_staff.hostname }}"
+ui_staff:
+  hostname:  "{{ hostname }}.{{ domainname }}"
+  root:     "/opt/ui_staff"
+  index:    "index.html"
 
 nginx_vhosts: 
   - listen: "80"
@@ -30,3 +26,13 @@ nginx_vhosts:
     filename: "{{ ui_patron.hostname }}.conf"
     state: "present"
     #template: "{{ nginx_vhost_template }}"
+  - listen: "80"
+    server_name: "{{ ui_staff.hostname }}"
+    extra_parameters: |
+      location / {
+         root {{ui_staff.root}};
+         index {{ ui_staff.index }};
+      }
+    filename: "{{ ui_staff.hostname }}.conf"
+    state: "present"
+ 

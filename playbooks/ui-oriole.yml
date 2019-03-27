@@ -10,6 +10,7 @@
         group: "{{ login_user }}"
         state: directory
         mode: 0755
+      register: ui_patron_dir
 
     - name: create ui-patron index file
       become: true
@@ -18,7 +19,30 @@
         owner: "{{ login_user }}"
         group: "{{ login_user }}"
         content: |
-          <h1>Patron UI<h1> 
+          <h1>Patron UI<h1>
+      when: ui_patron_dir.changed
+      notify: restart nginx
+
+    - name: create ui-staff root
+      become: true
+      file:
+        path: "{{ ui_staff.root }}"
+        owner: "{{ login_user }}"
+        group: "{{ login_user }}"
+        state: directory
+        mode: 0755
+      register: ui_staff_dir
+
+    - name: create ui-staff index file
+      become: true
+      copy:
+        dest: "{{ ui_staff.root }}/{{ ui_staff.index }}"
+        owner: "{{ login_user }}"
+        group: "{{ login_user }}"
+        content: |
+          <h1>Staff UI<h1>
+      when: ui_staff_dir.changed
+      notify: restart nginx
 
   roles:
   - { role: nginx,     tags: ['nginx'],    become: true }
