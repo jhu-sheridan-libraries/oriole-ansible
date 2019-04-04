@@ -1,10 +1,10 @@
 {
-  "id": "mod-users-bl-3.4.2",
+  "id": "mod-users-bl-4.3.2",
   "name": "users business logic",
   "provides": [
     {
       "id": "users-bl",
-      "version": "3.4",
+      "version": "4.3.2",
       "handlers": [
         {
           "methods": ["GET"],
