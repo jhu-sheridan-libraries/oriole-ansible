@@ -73,7 +73,7 @@ In the following file, update the mod-oriole versions
 Rename the mod-oriole module descriptor file with new version
 
 ```
-git mv playboooks/file/descriptors/mod-oriole-{old-version}.json layboooks/file/descriptors/mod-oriole-{new-version}.json
+git mv playboooks/files/descriptors/mod-oriole-{old-version}.json playboooks/files/descriptors/mod-oriole-{new-version}.json
 ```
 
 and make necessary changes (such as changes to permissions and module descriptors)
