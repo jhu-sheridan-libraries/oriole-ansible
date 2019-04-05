@@ -1,32 +1,68 @@
 {
-  "id": "mod-oriole-1.0.6",
+  "id": "mod-oriole-1.0.9",
   "name": "The ORIOLE module",
   "provides": [
     {
-      "id": "oriole-resources",
-      "version": "1.0",
+      "id": "oriole",
+      "version": "1.0.9",
       "handlers": [
         {
           "methods": [ "GET" ],
-          "pathPattern": "/oriole-resources"
+          "pathPattern": "/oriole/resources"
         },
         {
           "methods": ["GET"],
-          "pathPattern": "/oriole-resources/{id}"
+          "pathPattern": "/oriole/resources/{id}"
         },
         {
           "methods": [ "POST" ],
-          "pathPattern": "/oriole-resources",
+          "pathPattern": "/oriole/resources",
           "permissionsRequired": []
         },
         {
           "methods": [ "PUT" ],
-          "pathPattern": "/oriole-resources/{id}",
+          "pathPattern": "/oriole/resources/{id}",
           "permissionsRequired": []
         },
         {
           "methods": [ "DELETE" ],
-          "pathPattern": "/oriole-resources/{id}",
+          "pathPattern": "/oriole/resources/{id}",
+          "permissionsRequired": []
+        },
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/oriole/tags",
+          "permissionsRequired": []
+        },
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/oriole/subjects",
+          "permissionsRequired": []
+        },
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/oriole/subjects/{id}",
+          "permissionsRequired": []
+        },
+        {
+          "methods": [ "POST" ],
+          "pathPattern": "/oriole/subjects",
+          "permissionsRequired": []
+        },
+        {
+          "methods": [ "PUT" ],
+          "pathPattern": "/oriole/subjects/{id}",
+          "permissionsRequired": []
+        },
+        {
+          "methods": [ "DELETE" ],
+          "pathPattern": "/oriole/subjects/{id}",
+          "permissionsRequired": []
+
+        },
+        {
+          "methods": [ "DELETE" ],
+          "pathPattern": "/oriole/subjects",
           "permissionsRequired": []
         }
       ]
@@ -68,43 +104,7 @@
         }
       ]
     },
-    {
-      "id": "oriole-subjects",
-      "version": "1.0",
-      "handlers": [
-        {
-          "methods": [ "GET" ],
-          "pathPattern": "/oriole-subjects",
-          "permissionsRequired": []
-        },
-        {
-          "methods": [ "GET" ],
-          "pathPattern": "/oriole-subjects/{id}",
-          "permissionsRequired": []
-        },
-        {
-          "methods": [ "POST" ],
-          "pathPattern": "/oriole-subjects",
-          "permissionsRequired": []
-        },
-        {
-          "methods": [ "PUT" ],
-          "pathPattern": "/oriole-subjects/{id}",
-          "permissionsRequired": []
-        },
-        {
-          "methods": [ "DELETE" ],
-          "pathPattern": "/oriole-subjects/{id}",
-          "permissionsRequired": []
 
-        },
-        {
-          "methods": [ "DELETE" ],
-          "pathPattern": "/oriole-subjects",
-          "permissionsRequired": []
-        }
-      ]
-    },
     {
       "id": "_tenant",
       "version": "1.0",

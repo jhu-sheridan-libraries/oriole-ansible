@@ -8,79 +8,93 @@ ansible oriole -m raw -a "curl localhost:9130"
 ansible oriole -m uri -a 'method="DELETE" url=http://localhost:9130/_/proxy/tenants/jh-test'
 - this does return a failure
 
-# Usefull ansible commands
+# Useful ansible commands
 
-Create vagrant and oriale
+## Set up local oriole-dev server
+
+Create vagrant and oriole
+
 ```
 time vagrant up && time ansible-playbook main.yml  -v
 ```
-List docker contains
+
+## Set up remote oriole-test server
+
+```
+ansible-playbook -i inventory/test main.yml -v
+```
+
+## Commands to interact with docker containers
+
+List docker containers
+
 ```
 ansible oriole -m raw --become -a "docker ps "
 ```
 
+View docker logs
+
+```
+ansible oriole -m raw --become -a "docker logs --tail=50  okapi"
+ansible oriole -m raw --become -a "docker logs --tail=50  okapi"
+```
+
+Get list of instances on a docker network
+
+```
+ansible oriole -m raw --become -a "docker network inspect --format={%raw%}'{{range .Containers}}{{println .Name}}{{end}}'{%endraw%} backend"
+```
+
+## Other ansible Commands
+
 Get tenants, modules, discovery, envs
+
 ```
 ansible oriole --become  -m uri -a 'url=http://localhost:9130/_/proxy/tenants'
 ansible oriole --become  -m uri -a 'url=http://localhost:9130/_/proxy/modules'
 ansible oriole --become  -m uri -a 'url=http://localhost:9130/_/discovery'
 ansible oriole -m uri -a "url=http://localhost:9130/_/env"
 ```
-View docker logs
-```
-ansible oriole -m raw --become -a "docker logs --tail=50  okapi"
-ansible oriole -m raw --become -a "docker logs --tail=50  okapi"
-```
-Get list of isntances on a docker network
-```
-ansible oriole -m raw --become -a "docker network inspect --format={%raw%}'{{range .Containers}}{{println .Name}}{{end}}'{%endraw%} backend"
-```
 
-Get the oriole resources
-```
-curl -D - -w '\n' -H 'X-Okapi-Tenant: diku' http://oriole-dev:9130/oriole-resources
-```
+# Upgrade mod-oriole
 
-Upgrade mod-oriole
-```
-ansible -i inventory/test  oriole -m raw --become -a "docker stop mod-oriole "
-ansible -i inventory/test  oriole -m raw --become -a "docker rm mod-oriole "
-curl -i -w '\n' -X DELETE http://oriole-test.library.jhu.edu:9130/_/proxy/tenants/diku/modules/mod-oriole-1.0.1
-curl -i -w '\n' -X DELETE http://oriole-test.library.jhu.edu:9130/_/proxy/modules/mod-oriole-1.0.1
-update okapi.yml inventory 1.0.2
-git mv playboooks/file/descriptors/mod-oriole-1.0.1.json layboooks/file/descriptors/mod-oriole-1.0.2.json
-update the new discriptor
-ansible-playbook -i inventory/test playbooks/oriole.yml -v
-```
+Here's the workflow to upgrade mod-oriole.
 
-# Remove all Oriole components and data
+## 1. Build mod-oriole, and upload it to docker hub.
 
-To remote the Data and containers do the following
+Refer to the documentation in the mod-oriole project for how to do this.
+
+## 2. Update these files
+
+In the following file, update the mod-oriole versions
+
+* inventory/group_vars/all/okapi.yml
+
+Rename the mod-oriole module descriptor file with new version
 
 ```
-sudo docker stop okapi mod-oriole mod-configuration mod-authtoken mod-permissions mod-login mod-users
-sudo docker rm okapi mod-oriole mod-configuration mod-authtoken mod-permissions mod-login mod-users
-sudo runuser -l postgres -c "dropdb okapi; dropdb okapi_modules; dropuser diku_mod_configuration; dropuser diku_mod_login; dropuser diku_mod_oriole; dropuser diku_mod_permissions; dropuser diku_mod_users;"
+git mv playboooks/files/descriptors/mod-oriole-{old-version}.json playboooks/files/descriptors/mod-oriole-{new-version}.json
 ```
 
-# Deploy New Oriole version
+and make necessary changes (such as changes to permissions and module descriptors)
 
-Deploy the new oriole version with ansible.
+## 3. Remove okapi-modules and database tables
+
+SSH to the server, and remove all okapi modules and database tables.
+
+For example, to upgrade mod-oriole on oriole-test.library.jhu.edu
+
 ```
-ansible-playbook -i inventory/test playbooks/oriole.yml -v
+ssh oriole-test.library.jhu.edu
+# after login, become sudoer and do the following:
+sudo su -
+docker stop okapi mod-oriole mod-configuration mod-authtoken mod-permissions mod-login mod-users
+docker rm okapi mod-oriole mod-configuration mod-authtoken mod-permissions mod-login mod-users
+runuser -l postgres -c "dropdb okapi; dropdb okapi_modules; dropuser diku_mod_configuration; dropuser diku_mod_login; dropuser diku_mod_oriole; dropuser diku_mod_permissions; dropuser diku_mod_users;"
 ```
 
-# Centos Docker Network
- 
-ncli device status
+## 4. On local dev machine, use ansible to deploy again
 
-TODO
-
-- turn off NetworkManager not recommended for docker
-  systemctl stop NetworkManager.service
-  systemctl disable NetworkManager.service
-- see ncli device status (docker0 and dockernet)
-  firewall-cmd --permanent --zone=trusted --add-interface=docker0
-  firewall-cmd --permanent --zone=trusted --add-interface=dockernet
-  restart docker
-
+```
+ansible-playbook -i inventory/test main.yml -v
+```
