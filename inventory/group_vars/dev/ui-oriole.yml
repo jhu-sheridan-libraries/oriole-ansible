@@ -1,0 +1,7 @@
+---
+ssl_self_sign_cert:          true
+ssl_provided_cert:           false
+ssl_certificate_file:        'self_signed.crt'
+ssl_certificate_csr_file:    'self_signed.csr'
+ssl_certificate_key_file:    'self_signed.key'
+ssl_certificate_interm_file: null

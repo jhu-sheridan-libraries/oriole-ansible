@@ -2,12 +2,31 @@
   hosts: okapi 
 
   roles:
-  - { role: firewalld,  tags: ['firewalld'], become: true }
-  - { role: repo-epel, tags: ['docker'],   become: true }
-  - { role: pip,       tags: ['docker'],   become: true }
-  - { role: nginx,     tags: ['nginx'],    become: true }
-  - { role: repo-ius,  tags: ['git'],      become: true }
-  - { role: git,       tags: ['git'],      become: true }
-  - { role: java,      tags: ['java'],     become: true }
-  - { role: docker,    tags: ['docker'],   become: true }
-  - { role: postgres,  tags: ['postgres'], become: true }
+    - { role: firewalld,  tags: ['firewalld'], become: true }
+    - { role: repo-epel, tags: ['docker'],   become: true }
+    - { role: pip,       tags: ['docker', 'nginx'], become: true }
+    - { role: repo-ius,  tags: ['git'],      become: true }
+    - { role: git,       tags: ['git'],      become: true }
+    - { role: java,      tags: ['java'],     become: true }
+    - { role: docker,    tags: ['docker'],   become: true }
+    - { role: postgres,  tags: ['postgres'], become: true }
+
+  post_tasks:
+    - name: stop service cron on debian, if running
+      become: true
+      systemd:
+        name:    'NetworkManager'
+        state:   'stopped'
+        enabled:  'no'
+
+    - name: ensure firewall manages and trusts docker0 interface
+      become: true
+      firewalld:
+        zone: 'trusted'
+        interface: 'docker0'
+        permanent: 'yes'
+        state: enabled
+        immediate: yes
+
+
+

@@ -13,6 +13,7 @@ all:
         - 'oriole-dev'
         - 'oriole-dev.library.jhu.edu'
         - 'databases-dev.library.jhu.edu'
+        - 'lara-dev.library.jhu.edu'
   children:
     dev:
       hosts:

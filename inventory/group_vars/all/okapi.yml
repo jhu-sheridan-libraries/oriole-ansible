@@ -80,6 +80,7 @@ okapi_log_dir:    "/var/log/folio/okpai"
 #okapi_pid_dir:    "/var/run/okapi"
 
 okapi_dockerurl:   'http://localhost:4243'
+okapi_docker_network_name: dockernet
 
 okapi_loglevel:    'INFO'
 okapi_log4j_config: "{{ okapi_conf_dir }}/log4j.properties"

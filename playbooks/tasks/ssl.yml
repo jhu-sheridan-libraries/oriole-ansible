@@ -1,0 +1,49 @@
+
+- name: install python pip docker package
+  become: true
+  pip:
+    name: pyopenssl 
+
+- name: Set httpd_can_network_connect flag for proxy
+  become: true
+  seboolean:
+    name: httpd_can_network_connect
+    state: yes
+    persistent: yes
+
+- name: Generate Diffie-Hellman Parameters for nginx
+  become: true
+  openssl_dhparam:
+    path: "{{ ssl_certificate_cert_path }}/{{ ssl_certificate_dhparam_file }}"
+    size: 2048
+    seuser: 'system_u'
+
+- name: prevent mutually-exclusive settings
+  assert:
+    that:
+      - not (ssl_self_sign_cert and ssl_provided_cert)
+    msg: "ssl_self_sign_cert and ssl_provided_cert are mutually exclusive"
+
+- block:
+  - name: Generate an OpenSSL private key.
+    openssl_privatekey:
+      path: "{{ ssl_certificate_key_path }}/{{ ssl_certificate_key_file }}"
+      seuser: 'system_u'
+
+  - name: Generate an OpenSSL CSR.
+    openssl_csr:
+      path: "{{ ssl_certificate_key_path }}/{{ ssl_certificate_csr_file }}.csr"
+      privatekey_path:  "{{ ssl_certificate_key_path }}/{{ ssl_certificate_key_file }}"
+      common_name: "{{ hostname }}"
+      seuser: 'system_u'
+
+  - name: Generate a Self Signed OpenSSL certificate.
+    openssl_certificate:
+      path: "{{ ssl_certificate_cert_path }}/{{ ssl_certificate_file }}"
+      privatekey_path:  "{{ ssl_certificate_key_path }}/{{ ssl_certificate_key_file }}"
+      csr_path: "{{ ssl_certificate_key_path }}/{{ ssl_certificate_csr_file }}.csr"
+      provider: selfsigned
+      seuser: 'system_u'
+  become: true
+  when: ssl_self_sign_cert
+
