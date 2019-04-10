@@ -1,10 +1,10 @@
 {
-  "id": "mod-oriole-1.0.9",
+  "id": "mod-oriole-1.0.11",
   "name": "The ORIOLE module",
   "provides": [
     {
       "id": "oriole",
-      "version": "1.0.9",
+      "version": "1.0.11",
       "handlers": [
         {
           "methods": [ "GET" ],
