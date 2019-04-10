@@ -1,6 +1,12 @@
 - name: install oriole prereqs
   hosts: okapi 
 
+  pre_tasks: 
+    - import_tasks: 'tasks/ssl.yml'
+
+  roles:
+    - { role: nginx,     tags: ['nginx'],    become: true }
+
   tasks:
     - name: create ui-patron root
       become: true
@@ -11,6 +17,7 @@
         state: directory
         mode: 0755
       register: ui_patron_dir
+      notify: restart nginx
 
     - name: create ui-patron index file
       become: true
@@ -21,7 +28,6 @@
         content: |
           <h1>Patron UI<h1>
       when: ui_patron_dir.changed
-      notify: restart nginx
 
     - name: create ui-staff root
       become: true
@@ -32,6 +38,7 @@
         state: directory
         mode: 0755
       register: ui_staff_dir
+      notify: restart nginx
 
     - name: create ui-staff index file
       become: true
@@ -42,7 +49,3 @@
         content: |
           <h1>Staff UI<h1>
       when: ui_staff_dir.changed
-      notify: restart nginx
-
-  roles:
-  - { role: nginx,     tags: ['nginx'],    become: true }

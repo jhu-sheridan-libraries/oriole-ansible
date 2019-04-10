@@ -45,12 +45,22 @@
         src: log4j.properties.j2
         dest: "{{ okapi_log4j_config }}"
         #notify: restart okapi container
-        
 
     - name: create backend docker network
       become: yes
       docker_network:
         name: backend
+        driver_options:
+          com.docker.network.bridge.name: "{{ okapi_docker_network_name}}"
+
+    - name: add new interface to trusted zone
+      become: true
+      firewalld:
+        zone: 'trusted'
+        interface: "{{ okapi_docker_network_name }}"
+        permanent: 'yes'
+        state: 'enabled'
+        immediate: 'yes'
 
     - name: create the okapi container
       become: yes

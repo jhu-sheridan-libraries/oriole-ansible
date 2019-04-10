@@ -98,3 +98,16 @@ runuser -l postgres -c "dropdb okapi; dropdb okapi_modules; dropuser diku_mod_co
 ```
 ansible-playbook -i inventory/test main.yml -v
 ```
+
+## Note: Redhat networking docker issues
+
+Redhat/Centos: NetworkManager has issues managing the docker network/s
+https://success.docker.com/article/should-you-use-networkmanager
+
+The following has been ansiblized.
+Ensure we have stopped network manager, and trust docekr networks  
+systemctl stop NetworkManager.service
+systemctl disable NetworkManager.service
+firewall-cmd --permanent --zone=trusted --change-interface=docker0
+firewall-cmd --permanent --zone=trusted --add-interface=dockernet
+  
