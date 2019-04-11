@@ -11,3 +11,10 @@ domainname:             "library.jhu.edu"
 
 docker_etc_hosts:
   "oriole-dev.library.jhu.edu": "{{ ansible_default_ipv4.address }}"
+
+# On dev open okapi port for use with data load
+# We do not have a self signed cert
+firewalld_ports:
+  - port: "{{ okapi_port }}"
+    protocol: tcp
+    state: enabled
