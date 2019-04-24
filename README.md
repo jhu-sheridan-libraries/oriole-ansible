@@ -88,9 +88,9 @@ For example, to upgrade mod-oriole on oriole-test.library.jhu.edu
 ssh oriole-test.library.jhu.edu
 # after login, become sudoer and do the following:
 sudo su -
-docker stop okapi mod-oriole mod-configuration mod-authtoken mod-permissions mod-login mod-users
-docker rm okapi mod-oriole mod-configuration mod-authtoken mod-permissions mod-login mod-users
-runuser -l postgres -c "dropdb okapi; dropdb okapi_modules; dropuser diku_mod_configuration; dropuser diku_mod_login; dropuser diku_mod_oriole; dropuser diku_mod_permissions; dropuser diku_mod_users;"
+docker stop okapi mod-oriole mod-configuration mod-authtoken mod-permissions mod-login mod-users mod-password-validator mod-notify mod-users-bl mod-login-saml
+docker rm okapi mod-oriole mod-configuration mod-authtoken mod-permissions mod-login mod-users mod-password-validator mod-notify mod-users-bl mod-login-saml
+runuser -l postgres -c "dropdb okapi; dropdb okapi_modules; dropuser diku_mod_configuration; dropuser diku_mod_login; dropuser diku_mod_oriole; dropuser diku_mod_permissions; dropuser diku_mod_users; dropuser diku_mod_password_validator; dropuser diku_mod_notify; dropuser diku_mod_users_bl; dropuser diku_mod_login_saml"
 ```
 
 ## 4. On local dev machine, use ansible to deploy again
@@ -110,4 +110,3 @@ systemctl stop NetworkManager.service
 systemctl disable NetworkManager.service
 firewall-cmd --permanent --zone=trusted --change-interface=docker0
 firewall-cmd --permanent --zone=trusted --add-interface=dockernet
-  

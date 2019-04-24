@@ -1,0 +1,110 @@
+{
+  "id": "${artifactId}-${version}",
+  "name": "SAML login",
+  "provides": [
+    {
+      "id": "login-saml",
+      "version": "1.0",
+      "handlers": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "pathPattern": "/saml/login",
+          "modulePermissions": [
+            "configuration.entries.collection.get"
+          ]
+        },
+        {
+          "methods": [
+            "POST"
+          ],
+          "pathPattern": "/saml/callback",
+          "modulePermissions": [
+            "auth.signtoken",
+            "configuration.entries.collection.get",
+            "users.collection.get"
+          ]
+        },
+        {
+          "methods": [
+            "GET"
+          ],
+          "pathPattern": "/saml/regenerate",
+          "permissionsRequired": [
+            "login-saml.regenerate"
+          ],
+          "modulePermissions": [
+            "configuration.entries.collection.get",
+            "configuration.entries.item.post",
+            "configuration.entries.item.put"
+          ]
+        },
+        {
+          "methods": [
+            "GET"
+          ],
+          "pathPattern": "/saml/check",
+          "modulePermissions": [
+            "configuration.entries.collection.get"
+          ]
+        },
+        {
+          "methods": [
+            "GET",
+            "PUT"
+          ],
+          "pathPattern": "/saml/configuration",
+          "modulePermissions": [
+            "configuration.entries.collection.get",
+            "configuration.entries.item.post",
+            "configuration.entries.item.put"
+          ]
+        },
+        {
+          "methods": [
+            "GET"
+          ],
+          "pathPattern": "/saml/validate"
+        }
+      ]
+    }
+  ],
+  "permissionSets": [
+    {
+      "permissionName": "login-saml.regenerate",
+      "displayName": "SAML sp-metadata regeneration",
+      "description": ""
+    },
+    {
+      "permissionName": "login-saml.all",
+      "displayName": "Login-SAML: administration",
+      "description": "",
+      "subPermissions": [
+        "login-saml.regenerate"
+      ],
+      "visible": true
+    }
+  ],
+  "requires": [
+    {
+      "id": "authtoken",
+      "version": "1.0 2.0"
+    },
+    {
+      "id": "users",
+      "version": "14.0 15.0"
+    },
+    {
+      "id": "configuration",
+      "version": "2.0"
+    }
+  ],
+  "launchDescriptor": {
+    "dockerImage": "${artifactId}:${version}",
+    "dockerArgs": {
+      "HostConfig": { "PortBindings": { "8081/tcp":  [{ "HostPort": "%p" }] } }
+    },
+    "dockerPull" : false
+  }
+}
