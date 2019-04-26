@@ -157,60 +157,50 @@ okapi_modules:
     version: '15.3.0'
     port: '10001'
     active: true
-    auth: true
     env: "{{ okapi_envs }}"
   - name: mod-login
     version: '4.6.0'
     port: '10002'
     active: true
-    auth: true
     env: "{{ okapi_envs }}"
   - name: mod-permissions
     version: '5.4.0'
     port: '10003'
     active: true
-    auth: true
     env: "{{ okapi_envs }}"
   - name: mod-authtoken
     version: '2.0.3'
     port: '10004'
     active: true
-    auth: false
     env: "{{ okapi_envs }}"
   - name: mod-configuration
     version: '5.0.1'
     port: '10005'
     active: true
-    auth: false
     env: "{{ okapi_envs }}"
   - name: mod-password-validator
     version: '1.0.1'
-    port: '10007'
+    port: '10006'
     active: true
-    auth: false
     env: "{{ okapi_envs }}"
   - name: mod-notify
     version: '2.0.0'
-    port: '10008'
+    port: '10007'
     active: true
-    auth: false
-    env: "{{ okapi_envs }}"
-  - name: mod-users-bl
-    version: '4.3.2'
-    port: '10006'
-    active: true
-    auth: false
     env: "{{ okapi_envs }}"
   - name: mod-login-saml
     version: '1.2.1'
+    port: '10008'
+    active: true
+    env: "{{ okapi_envs }}"
+  - name: mod-users-bl
+    version: '4.3.2'
     port: '10009'
     active: true
-    auth: false
     env: "{{ okapi_envs }}"
   - name: mod-oriole
     version: '1.0.11'
     docker_image: 'jhulibraries/mod-oriole:1.0.11'
     port: '10050'
     active: true
-    auth: false
     env: "{{ okapi_envs }}"

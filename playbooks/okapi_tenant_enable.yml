@@ -8,7 +8,6 @@
       debug:
         msg: "tenant {{ item }}"
       loop: "{{ folio_tenants|flatten(levels=1) }}"
-      tags: indev
 
     - name: check tenant registration
       uri:

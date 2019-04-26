@@ -2,35 +2,26 @@
 # Create tenant admin users
 - hosts: oriole
 
-  vars:
-    mod_authtoken_id: mod-authtoken-2.0.3
-
   tasks:
     - name: get active tenents
       set_fact:
-        active_tenants: "{{folio_tenants|selectattr('active')|list}}" 
-      tags: indev
+        active_tenants: "{{ folio_tenants | selectattr('active') | list}}"
 
-    - name: check tenent mod-authtoken
-      uri:
-        url: "{{ external_okapi_url }}/_/proxy/tenants/{{ item.id }}/interfaces/authtoken"
-      register: check_tenant_auth_mod
-      loop: "{{ active_tenants|flatten(levels=1) }}"
-      tags: indev
+    - name: get authtoken modules
+      set_fact:
+        authtoken_module: "{{ okapi_modules | selectattr('name', 'search', 'authtoken') | list }}"
 
-    - name: Disable tenant mod-authtoken
+    - name: Disable tenant authtoken module, also disables auth mods
       uri:
-        url: "{{ external_okapi_url }}/_/proxy/tenants/{{ item.item.id }}/install"
+        url: "{{ external_okapi_url }}/_/proxy/tenants/{{ item.0.id }}/install"
         method: POST
-        body: 
-          - id: "{{ item.json.0.id }}"
+        body:
+          - id: "{{ item.1.name }}-{{ item.1.version }}"
             action: "disable"
         body_format: json
-      register: check_tenant_auth_disabled
-      when: item.json.0 is defined
-      loop: "{{ check_tenant_auth_mod.results|selectattr('status', 'equalto',200) | list }}"
-      tags: indev
-
+      register: authtoken_disable
+      loop: "{{ active_tenants | product( authtoken_module ) | list  }}"
+ 
     - name: Check tenant admin user
       uri:
         url: "{{ external_okapi_url }}/users?query=username%3d%3d{{ item.admin_user.username }}"
@@ -41,7 +32,6 @@
         status_code: [200]
       register: check_tenant_admin
       loop: "{{ active_tenants|flatten(levels=1) }}"
-      tags: indev
 
     - name: Create tenant admin user
       uri:
@@ -50,7 +40,7 @@
         headers:
           Accept: "application/json, text/plain"
           X-Okapi-Tenant: "{{ item.item.id }}"
-        body: 
+        body:
           id: "{{ item.item.admin_user.id }}"
           username: "{{ item.item.admin_user.username }}"
           personal: "{{ item.item.admin_user.personal }}"
@@ -77,7 +67,7 @@
         headers:
           Accept: "application/json, text/plain"
           X-Okapi-Tenant: "{{ item.item.id }}"
-        body: 
+        body:
           userId: "{{ item.item.admin_user.id }}"
           password: "{{ item.item.admin_user.password }}"
         body_format: json
@@ -103,25 +93,32 @@
         headers:
           Accept: "application/json, text/plain"
           X-Okapi-Tenant: "{{ item.item.id }}"
-        body: 
+        body:
           userId: "{{ item.item.admin_user.id }}"
           permissions: "{{ item.item.admin_user.permissions }}"
         body_format: json
         status_code: 201
       loop: "{{ check_tenant_admin_perms.results|selectattr('json.totalRecords', 'equalto' , 0) | list }}"
 
-    - name: Enable tenant mod-authtoken
+    - name: Enable tenant authtoken module
       uri:
-        url: "{{ external_okapi_url }}/_/proxy/tenants/{{ item.id }}/install"
+        url: "{{ external_okapi_url }}/_/proxy/tenants/{{ item.0.id }}/install"
         method: POST
         body: 
-          - id: "{{ mod_authtoken_id }}"
+          - id: "{{ item.1.name }}-{{ item.1.version }}"
             action: "enable"
         body_format: json
-      register: check_tenant_auth_enabled
-      loop: "{{ active_tenants|flatten(levels=1) }}"
+      register: authtoken_enable
+      loop: "{{ active_tenants | product( authtoken_module ) | list  }}"
 
-      #- name: login as adminuser (bl_users)
-      #- name: get list of permissions
-      #- name: assign permissions
+    - name: Enable tenant auth modules
+      uri:
+        url: "{{ item.0.url }}"
+        method: POST
+        body:
+          - id: "{{ item.1.id }}"
+            action: "enable"
+        body_format: json
+      register: auth_mods_enable
+      loop: "{{ authtoken_disable.results | subelements('json') | list  }}"
 

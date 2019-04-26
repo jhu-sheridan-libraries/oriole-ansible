@@ -9,12 +9,10 @@
     - name: get active tenents
       set_fact:
         active_tenants: "{{folio_tenants|selectattr('active')|list}}" 
-      tags: indev
 
     - name: get active modules
       set_fact:
         active_okapi_mods: "{{okapi_modules|selectattr('active')|list}}" 
-      tags: indev
 
     - name: check tenant okapi version 
       uri:
@@ -43,13 +41,14 @@
       loop: "{{ active_tenants|product(active_okapi_mods)|list }}"
       tags: indev
 
-    - name: enable tenant modules 
+    - name: install tenant modules
       uri:
-        url: "{{external_okapi_url}}/_/proxy/tenants/{{ item.item.0.id }}/modules"
+        url: "{{external_okapi_url}}/_/proxy/tenants/{{ item.item.0.id }}/install"
         method: 'POST'
-        body: 
-          id : "{{ item.item.1.name }}-{{ item.item.1.version }}"
+        body:
+          - id : "{{ item.item.1.name }}-{{ item.item.1.version }}"
+            action: enable
         body_format: 'json'
         status_code: [200,201]
       loop: "{{ check_tenant_mods_installed.results|selectattr('status', 'equalto',404) | list }}"
-      tags: indev
+
