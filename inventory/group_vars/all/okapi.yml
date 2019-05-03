@@ -198,9 +198,15 @@ okapi_modules:
     port: '10009'
     active: true
     env: "{{ okapi_envs }}"
+  - name: mod-licenses
+    version: '1.4.0'
+    port: '10010'
+    active: true
+    env: "{{ okapi_envs }}"
+    discovery_port: '8080'
   - name: mod-oriole
-    version: '1.0.11'
-    docker_image: 'jhulibraries/mod-oriole:1.0.11'
+    version: '1.0.14'
+    docker_image: 'jhulibraries/mod-oriole:1.0.14'
     port: '10050'
     active: true
     env: "{{ okapi_envs }}"

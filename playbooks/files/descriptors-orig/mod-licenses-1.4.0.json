@@ -1,0 +1,67 @@
+{
+  "id": "${info.app.name}-${info.app.version}",
+  "name": "${info.app.name}",
+  "provides": [
+    {
+      "id": "licenses",
+      "version": "${info.app.minorVersion}",
+      "handlers" : [
+        {
+          "methods": ["GET", "DELETE", "POST", "PUT"],
+          "pathPattern": "/licenses/*"
+        }
+      ]
+    },{
+      "id": "erm-org",
+      "version": "1.0",
+      "handlers": [
+        {
+          "methods": ["GET", "POST"],
+          "pathPattern": "/erm-org/content",
+          "modulePermissions": [ "vendor.collection.get" ]
+        },{
+          "methods": ["GET"],
+          "pathPattern": "/erm-org/find/{name}",
+          "modulePermissions": [ "vendor.collection.get" ]
+        }
+      ]
+    },{
+      "id": "_tenant",
+      "version": "1.0",
+      "interfaceType" : "system",
+      "handlers": [
+        {
+          "methods": ["GET"],
+          "pathPattern": "/_/tenant"
+        },{
+          "methods": ["DELETE"],
+          "pathPattern": "/_/tenant"
+        }
+      ]
+    }
+  ],
+  "permissionSets": [
+    {
+      "permissionName": "module.erm-stripes.enabled",
+      "displayName": "OLF License",
+      "description": "Base property to enable any access the OLF License module",
+      "visible": false
+    },
+    {
+      "permissionName": "mod-licenses.user",
+      "displayName": "OLF License - User",
+      "description": "A user of OLF License",
+      "subPermissions": [
+        "module.license-stripes.enabled"
+      ],
+      "visible": true
+    }
+  ],
+  "launchDescriptor": {
+    "dockerImage": "${info.app.name}:${info.app.version}",
+    "dockerArgs": {
+      "HostConfig": { "PortBindings": { "8080/tcp":  [{ "HostPort": "%p" }] } }
+    },
+    "dockerPull" : false
+  }
+}
