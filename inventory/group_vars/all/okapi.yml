@@ -12,6 +12,7 @@ admin_permissions:
   - oriole.resources.admin
   - oriole.libraries.admin
   - oriole.subjects.admin
+  - login-saml.regenerate
 
 
 # List of tenants
@@ -189,7 +190,8 @@ okapi_modules:
     active: true
     env: "{{ okapi_envs }}"
   - name: mod-login-saml
-    version: '1.2.1'
+    version: '1.2.2'
+    docker_image: 'jiaola/mod-login-saml:1.2.2'
     port: '10008'
     active: true
     env: "{{ okapi_envs }}"
@@ -198,9 +200,15 @@ okapi_modules:
     port: '10009'
     active: true
     env: "{{ okapi_envs }}"
+  - name: mod-licenses
+    version: '1.4.0'
+    port: '10010'
+    active: true
+    env: "{{ okapi_envs }}"
+    discovery_port: '8080'
   - name: mod-oriole
-    version: '1.0.11'
-    docker_image: 'jhulibraries/mod-oriole:1.0.11'
+    version: '1.0.14'
+    docker_image: 'jhulibraries/mod-oriole:1.0.14'
     port: '10050'
     active: true
     env: "{{ okapi_envs }}"

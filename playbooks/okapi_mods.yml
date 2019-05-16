@@ -3,16 +3,16 @@
 - hosts: oriole
 
   tasks:
-    - name: get active modules 
+    - name: get active modules
       set_fact:
-        active_mods: "{{okapi_modules|selectattr('active')|list}}" 
+        active_mods: "{{okapi_modules|selectattr('active')|list}}"
 
-    - name: check okapi mods 
+    - name: check okapi mods
       uri:
         url: "{{external_okapi_url}}/_/proxy/modules/{{ item.name }}-{{ item.version }}"
         method: 'GET'
         status_code: [200,404]
-      register: check_active_mods 
+      register: check_active_mods
       loop: "{{ active_mods|flatten(levels=1) }}"
 
     - name: register okapi mods
@@ -25,24 +25,23 @@
       loop: "{{ check_active_mods.results|flatten(levels=1) }}"
       when: item.status != 200
 
-    - name: check okapi discovery 
+    - name: check okapi discovery
       uri:
-        url: "{{external_okapi_url}}/_/discovery/modules/{{ item.name }}-{{ item.version }}" 
+        url: "{{external_okapi_url}}/_/discovery/modules/{{ item.name }}-{{ item.version }}"
         method: 'GET'
         status_code: [200,404]
-      register: check_discovery 
+      register: check_discovery
       loop: "{{ active_mods|flatten(levels=1) }}"
 
     - name: adding okapi discovery
       uri:
         url: "{{external_okapi_url}}/_/discovery/modules"
         method: 'POST'
-        body: 
+        body:
           srvcId : "{{ item.item.name }}-{{ item.item.version }}"
           instId : "{{ item.item.name }}"
-          url    : "http://{{ item.item.name }}:8081"
+          url    : "http://{{ item.item.name }}:{{ item.item.discovery_port | default('8081') }}"
         body_format: 'json'
         status_code: [200,201]
       loop: "{{ check_discovery.results|flatten(levels=1) }}"
       when: item.status != 200
-
