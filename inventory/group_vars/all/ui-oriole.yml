@@ -2,7 +2,7 @@ ui_patron:
   hostname: "databases-{{ environ }}.{{ domainname}}"
   root:     '/opt/ui_patron'
   index:    'index.html'
-  
+
 ui_staff:
   hostname:  "{{ hostname }}.{{ domainname }}"
   root:      '/opt/ui_staff'
@@ -22,7 +22,7 @@ ssl_certificate_key_path:        '/etc/pki/tls/private'
 
 nginx_vhost_template:   'local_nginx_vhost.conf.j2'
 
-nginx_vhosts: 
+nginx_vhosts:
   - server_name: 'localhost'
     listen:      '80 default_server'
     filename:    'default.conf'
@@ -34,7 +34,7 @@ nginx_vhosts:
     extra_parameters: |
       location / {
          root {{ui_patron.root}};
-         index {{ ui_patron.index }};
+         try_files $uri $uri/ /{{ ui_patron.index }};
       }
     filename: "{{ ui_patron.hostname }}.conf"
     template: "{{ nginx_vhost_template }}"
@@ -44,7 +44,11 @@ nginx_vhosts:
     extra_parameters: |
       location / {
          root {{ui_staff.root}};
-         index {{ ui_staff.index }};
+         try_files $uri $uri/ /{{ ui_patron.index }};
+      }
+      location /_/invoke/tenant/diku/saml/ {
+        proxy_pass http://127.0.0.1:9130/_/invoke/tenant/diku/saml/;
+        proxy_set_header X-Okapi-Tenant diku;
       }
     filename: "{{ ui_staff.hostname }}.conf"
     template:    "{{ nginx_vhost_template }}"
