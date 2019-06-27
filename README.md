@@ -90,7 +90,8 @@ ssh oriole-test.library.jhu.edu
 sudo su -
 docker stop okapi mod-oriole mod-configuration mod-authtoken mod-permissions mod-login mod-users mod-password-validator mod-notify mod-users-bl mod-login-saml mod-licenses
 docker rm okapi mod-oriole mod-configuration mod-authtoken mod-permissions mod-login mod-users mod-password-validator mod-notify mod-users-bl mod-login-saml mod-licenses
-runuser -l postgres -c "dropdb okapi; dropdb okapi_modules; dropuser diku_mod_configuration; dropuser diku_mod_login; dropuser diku_mod_oriole; dropuser diku_mod_permissions; dropuser diku_mod_users; dropuser diku_mod_password_validator; dropuser diku_mod_notify; dropuser diku_mod_licenses"
+runuser -l postgres -c "dropdb okapi; dropdb okapi_modules; dropuser diku_mod_configuration; dropuser diku_mod_login; dropuser diku_mod_oriole; dropuser diku_mod_permissions; dropuser diku_mod_users; dropuser diku_mod_password_validator; dropuser diku_mod_notify;"
+docker image rm jhulibraries/mod-oriole:1.0.17
 ```
 
 If there's a connection error, shutdown postgresql and restart it before drop the databases

@@ -207,8 +207,8 @@ okapi_modules:
     env: "{{ okapi_envs }}"
     discovery_port: '8080'
   - name: mod-oriole
-    version: '1.0.16'
-    docker_image: 'jhulibraries/mod-oriole:1.0.16'
+    version: '1.0.17'
+    docker_image: 'jhulibraries/mod-oriole:1.0.17'
     port: '10050'
     active: true
     env: "{{ okapi_envs }}"
