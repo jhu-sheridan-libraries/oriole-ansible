@@ -5,6 +5,7 @@
 project:        "oriole-ansible"
 version:        "0.1.0"
 login_user:     "deploy"
+login_group:    "deploy"
 app_name:       "oriole"
 
 # ssh vars
@@ -18,7 +19,7 @@ mode:             "deploy" # dev || deploy
 docker_edition: 'ce'
 #docker_package: "docker-{{ docker_edition }}"
 docker_package_state: present
-docker_install_compose: true 
+docker_install_compose: true
 
 # No DNS entry for hostname for -dev server. resolve to docker-host
 # See https://stackoverflow.com/questions/24319662/from-inside-of-a-docker-container-how-do-i-connect-to-the-localhost-of-the-mach/52858101#52858101
@@ -26,10 +27,10 @@ docker_install_compose: true
 docker_etc_hosts: {}
 
 # TODO testing-backend only has one user so just use it.
-folio_user:  folio 
+folio_user:  folio
 folio_group: "{{ folio_user }}"
-okapi_user:    okapi 
-okapi_group:   "{{ okapi_user }}" 
+okapi_user:    okapi
+okapi_group:   "{{ okapi_user }}"
 
 postgres_version_major:     9
 postgres_version_minor:     6
@@ -37,10 +38,10 @@ postgres_extra_packages:
   - "postgresql-contrib"
 postgres_extensions:
   - pgcrypto
-# 
+#
 git_enablerepo: "ius"
 git_install_from_source: false
-git_packages: 
+git_packages:
   - git2u
 
 jhu_dns_servers:
@@ -64,4 +65,3 @@ firewalld_services:
     service: postgresql
     permanent: true
     state: enabled
-
