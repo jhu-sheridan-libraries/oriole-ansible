@@ -113,3 +113,14 @@ systemctl stop NetworkManager.service
 systemctl disable NetworkManager.service
 firewall-cmd --permanent --zone=trusted --change-interface=docker0
 firewall-cmd --permanent --zone=trusted --add-interface=dockernet
+
+
+## To upgrade a module
+
+docker stop module
+docker rm module
+docker image rm # clean up image
+
+update database
+delete row in okapi.public.deployments for mod-oriole
+delete row in okapi.public.modules for mod-oriole
