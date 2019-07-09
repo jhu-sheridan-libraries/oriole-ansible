@@ -18,3 +18,8 @@ firewalld_ports:
   - port: "{{ okapi_port }}"
     protocol: tcp
     state: enabled
+
+# SSH vars
+login_group:            "{{ lookup('ini', 'login_group section=dev file=~/.ansible.ini default=' + login_user ) }}"
+login_password:         "{{ lookup('ini', 'login_password section=dev file=~/.ansible.ini') }}"
+login_user_grant_sudo:  true

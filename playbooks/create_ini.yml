@@ -1,0 +1,15 @@
+---
+- name: create master ansible ini file
+  hosts: oriole
+  connection: local
+
+  tasks:
+  - name: create master ansible ini file
+    include_role:
+      name: login-user
+      tasks_from: create_ini
+    vars:
+      # remote_user: "[your JHED]"
+      # login_user: "[your JHED]"
+      # login_group: "developers"
+      # password: "[your password for dev VMs]"
