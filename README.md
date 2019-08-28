@@ -123,21 +123,22 @@ and make necessary changes (such as changes to permissions and module descriptor
 
 ## 3. Remove okapi-modules and database tables
 
-SSH to the server, and remove all okapi modules and database tables. This is outdated. Needs update. 
-
-For example, to upgrade mod-oriole on oriole-test.library.jhu.edu
+SSH to oriole-test.library.jhu.edu
 
 ```
-ssh oriole-test.library.jhu.edu
-# after login, become sudoer and do the following:
 sudo su -
-docker stop okapi mod-oriole mod-configuration mod-authtoken mod-permissions mod-login mod-users mod-password-validator mod-notify mod-users-bl mod-login-saml mod-licenses
-docker rm okapi mod-oriole mod-configuration mod-authtoken mod-permissions mod-login mod-users mod-password-validator mod-notify mod-users-bl mod-login-saml mod-licenses
-runuser -l postgres -c "dropdb okapi; dropdb okapi_modules; dropuser diku_mod_configuration; dropuser diku_mod_login; dropuser diku_mod_oriole; dropuser diku_mod_permissions; dropuser diku_mod_users; dropuser diku_mod_password_validator; dropuser diku_mod_notify;"
-docker image rm jhulibraries/mod-oriole:1.0.17
+docker stop mod-oriole 
+# If the following step fails, try stop all modules: 
+# docker stop okapi mod-oriole mod-configuration mod-authtoken mod-permissions mod-login mod-users mod-password-validator mod-notify mod-users-bl mod-login-saml mod-licenses
+docker rm mod-oriole
+docker image rm jhulibraries/mod-oriole:{version}
 ```
 
-If there's a connection error, shutdown postgresql and restart it before drop the databases
+Next you need to update the database, and remove the rows for `mod-oriole` in the following tables:
+
+* delete row in okapi.public.deployments for mod-oriole
+* delete row in okapi.public.modules for mod-oriole
+
 
 ## 4. On local dev machine, use ansible to deploy again
 
@@ -157,16 +158,6 @@ systemctl disable NetworkManager.service
 firewall-cmd --permanent --zone=trusted --change-interface=docker0
 firewall-cmd --permanent --zone=trusted --add-interface=dockernet
 
-
-## To upgrade a module
-
-docker stop module
-docker rm module
-docker image rm # clean up image
-
-update database
-delete row in okapi.public.deployments for mod-oriole
-delete row in okapi.public.modules for mod-oriole
 
 ## Some useful commands
 
