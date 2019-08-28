@@ -1,0 +1,19 @@
+---
+- name: configures the application user
+  hosts: okapi
+
+  tasks:
+  - name: add app user group
+    group:
+      name: "{{ app_group }}"
+      gid:  "{{ app_group_gid | default(omit) }}"
+      state: present
+    become: true
+
+  - name: add app user
+    user:
+      name: "{{ app_user }}"
+      shell: "/bin/bash"
+      uid:    "{{ app_user_uid  | default(omit) }}"
+      group:  "{{ app_group  }}"
+    become: true

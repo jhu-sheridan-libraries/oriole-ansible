@@ -9,7 +9,7 @@
       name: login-user
       tasks_from: create_ini
     vars:
-      # remote_user: "[your JHED]"
-      # login_user: "[your JHED]"
-      # login_group: "developers"
-      # password: "[your password for dev VMs]"
+      remote_user: djiao1
+      login_user: djiao1
+      login_group: developers
+      password: oriole

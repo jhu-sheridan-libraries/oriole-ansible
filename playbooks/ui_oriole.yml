@@ -1,7 +1,7 @@
 - name: install oriole prereqs
-  hosts: okapi 
+  hosts: okapi
 
-  pre_tasks: 
+  pre_tasks:
     - import_tasks: 'tasks/ssl.yml'
 
   roles:
@@ -12,8 +12,8 @@
       become: true
       file:
         path: "{{ ui_patron.root }}"
-        owner: "{{ login_user }}"
-        group: "{{ login_user }}"
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
         state: directory
         mode: 0755
       register: ui_patron_dir
@@ -23,8 +23,8 @@
       become: true
       copy:
         dest: "{{ ui_patron.root }}/{{ ui_patron.index }}"
-        owner: "{{ login_user }}"
-        group: "{{ login_user }}"
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
         content: |
           <h1>Patron UI<h1>
       when: ui_patron_dir.changed
@@ -33,8 +33,8 @@
       become: true
       file:
         path: "{{ ui_staff.root }}"
-        owner: "{{ login_user }}"
-        group: "{{ login_user }}"
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
         state: directory
         mode: 0755
       register: ui_staff_dir
@@ -44,8 +44,8 @@
       become: true
       copy:
         dest: "{{ ui_staff.root }}/{{ ui_staff.index }}"
-        owner: "{{ login_user }}"
-        group: "{{ login_user }}"
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
         content: |
           <h1>Staff UI<h1>
       when: ui_staff_dir.changed
