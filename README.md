@@ -134,11 +134,10 @@ docker rm mod-oriole
 docker image rm jhulibraries/mod-oriole:{version}
 ```
 
-Next you need to update the database, and remove the rows for `mod-oriole` in the following tables:
+Next you need to update the database, and remove the rows for `mod-oriole` in the following tables (TODO: Script this step):
 
 * delete row in okapi.public.deployments for mod-oriole
 * delete row in okapi.public.modules for mod-oriole
-
 
 ## 4. On local dev machine, use ansible to deploy again
 
