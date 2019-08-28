@@ -1,59 +1,94 @@
-# using ansible to check on okapi
-ansible oriole --become  -m uri -a 'url=http://localhost:9130/_/proxy/tenants' -vv
+# Oriole-ansible Quick Start
 
- # using curl to check on okapi
-ansible oriole -m raw -a "curl localhost:9130"
+## Set up local testing server
 
-# can also delete tenants
-ansible oriole -m uri -a 'method="DELETE" url=http://localhost:9130/_/proxy/tenants/jh-test'
-- this does return a failure
+### Install prequisites
 
-# Useful ansible commands
+* Ansible
+* Virtual Box and Vagrant
 
-## Set up local oriole-dev server
-
-Create vagrant and oriole
+Install vagrant-hostsupdater plugin
 
 ```
-time vagrant up && time ansible-playbook main.yml  -v
+vagrant plugin install vagrant-hostsupdater
 ```
 
-## Set up remote oriole-test server
+### Check out this repo
 
 ```
-ansible-playbook -i inventory/test main.yml -v
+git clone git@github.com:jhu-sheridan-libraries/oriole-ansible.git
 ```
 
-## Commands to interact with docker containers
+### Create ini file
 
-List docker containers
+Edit playbooks `playbooks/create-ini.yml`
 
-```
-ansible oriole -m raw --become -a "docker ps "
-```
+### Provision a vagrant box for the first time
 
-View docker logs
+First create a file in ~/.ssh/oriole-ansible/vault_password_file. The password is in lastpass. Save the value in the file.
 
-```
-ansible oriole -m raw --become -a "docker logs --tail=50  okapi"
-ansible oriole -m raw --become -a "docker logs --tail=50  okapi"
-```
-
-Get list of instances on a docker network
+Make sure there is a file `~/.ssh/config`, and it's mask is 600. 
 
 ```
-ansible oriole -m raw --become -a "docker network inspect --format={%raw%}'{{range .Containers}}{{println .Name}}{{end}}'{%endraw%} backend"
+vagrant up --provision
 ```
 
-## Other ansible Commands
+After this step, there will be a record in ~/.ssh/config for oriole-dev.test
 
-Get tenants, modules, discovery, envs
+You may want to add an alias for 'oriole-dev' in the config file.
+
+### Set up SSH
+
+Next set up SSH keywordless for the deploy user.
+
+The passphrase is stored in `inventory/group_vars/dev/vault.yml`. See the passphrase
 
 ```
-ansible oriole --become  -m uri -a 'url=http://localhost:9130/_/proxy/tenants'
-ansible oriole --become  -m uri -a 'url=http://localhost:9130/_/proxy/modules'
-ansible oriole --become  -m uri -a 'url=http://localhost:9130/_/discovery'
-ansible oriole -m uri -a "url=http://localhost:9130/_/env"
+ansible-vault view inventory/group_vars/dev/vault.yml | cat
+```
+
+Try
+
+```
+ssh oriole-dev
+```
+
+Enter the passphrase to login.
+
+Add the key to keychain on MacOS:
+
+```
+ssh-add -K ~/.ssh/oriole-ansible/oriole-ansible_dev
+```
+
+Note the `-K` option is not necessary on linux like Centos. 
+
+### Run ansible-playbook
+
+```
+ansible-playbook -i inventory/dev main.yml -v
+```
+
+## Set up oriole-test
+
+First make sure that you have passwordless login set up on oriole-test. 
+
+Then Modify the file ansible.cfg
+
+Set remote_user to your jhed_id. 
+
+Then run 
+
+```
+ansible-playbook setup.yml -i inventory/test -v -K
+```
+
+This will create the ssh keys. 
+
+Revert changes to ansible.cfg
+
+```
+git checkout ansible.cfg
 ```
 
 # Upgrade mod-oriole
@@ -62,7 +97,15 @@ Here's the workflow to upgrade mod-oriole.
 
 ## 1. Build mod-oriole, and upload it to docker hub.
 
-Refer to the documentation in the mod-oriole project for how to do this.
+In `mod-oriole` directory, run 
+
+```
+mvn clean install -DskipTests
+```
+
+It will automatically build the docker image. Push it to docker hub. 
+
+Refer to the documentation in the mod-oriole project for details. 
 
 ## 2. Update these files
 
@@ -80,7 +123,7 @@ and make necessary changes (such as changes to permissions and module descriptor
 
 ## 3. Remove okapi-modules and database tables
 
-SSH to the server, and remove all okapi modules and database tables.
+SSH to the server, and remove all okapi modules and database tables. This is outdated. Needs update. 
 
 For example, to upgrade mod-oriole on oriole-test.library.jhu.edu
 
@@ -124,3 +167,26 @@ docker image rm # clean up image
 update database
 delete row in okapi.public.deployments for mod-oriole
 delete row in okapi.public.modules for mod-oriole
+
+## Some useful commands
+
+### using ansible to check on okapi
+ansible oriole --become  -m uri -a 'url=http://localhost:9130/_/proxy/tenants' -vv
+
+### using curl to check on okapi
+ansible oriole -m raw -a "curl localhost:9130"
+
+### can also delete tenants
+ansible oriole -m uri -a 'method="DELETE" url=http://localhost:9130/_/proxy/tenants/jh-test'
+- this does return a failure
+
+### Other ansible Commands
+
+Get tenants, modules, discovery, envs
+
+```
+ansible oriole --become  -m uri -a 'url=http://localhost:9130/_/proxy/tenants'
+ansible oriole --become  -m uri -a 'url=http://localhost:9130/_/proxy/modules'
+ansible oriole --become  -m uri -a 'url=http://localhost:9130/_/discovery'
+ansible oriole -m uri -a "url=http://localhost:9130/_/env"
+```
