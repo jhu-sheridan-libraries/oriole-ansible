@@ -7,12 +7,7 @@
 * brew install ansible
 * brew cask install vagrant
 * brew cask install virtualbox
-
-Install vagrant-hostsupdater plugin
-
-```
-vagrant plugin install vagrant-hostsupdater
-```
+* vagrant plugin install vagrant-hostsupdater
 
 ### Check out this repo
 
