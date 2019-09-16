@@ -4,8 +4,9 @@
 
 ### Install prequisites
 
-* Ansible
-* Virtual Box and Vagrant
+* brew install ansible
+* brew cask install vagrant
+* brew cask install virtualbox
 
 Install vagrant-hostsupdater plugin
 
@@ -21,7 +22,7 @@ git clone git@github.com:jhu-sheridan-libraries/oriole-ansible.git
 
 ### Create ini file
 
-Edit playbooks `playbooks/create-ini.yml`
+Edit playbooks `playbooks/create-ini.yml` (not needed)
 
 ### Provision a vagrant box for the first time
 
