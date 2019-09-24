@@ -4,14 +4,27 @@
 # setup vars
 project:        "oriole-ansible"
 version:        "0.1.0"
-login_user:     "deploy"
-login_group:    "deploy"
 app_name:       "oriole"
+app_user:       "{{ app_name }}"
+app_group:      "{{ app_user }}"
 
 # ssh vars
-ssh_port: 22
-# uncomment after first run (if not 22):
-# ansible_ssh_port: "{{ ssh_port }}"
+use_master_user:          true
+# deprivilege_deploy_user:  true
+remote_user:              "{{ lookup('ini', 'remote_user section=cross-project file=~/.ansible.ini') }}"
+login_user:               "{{ lookup('ini', 'login_user section=cross-project file=~/.ansible.ini') }}"
+login_group:              "{{ lookup('ini', 'login_group section=cross-project file=~/.ansible.ini default=' + login_user ) }}"
+login_user_key:           "jhu_ssh_key"
+create_login_user_key:    true
+create_login_user:        false
+login_user_grant_sudo:    false
+ssh_aliases:
+- "{{ app_name }}-{{ environ }}"
+# ssh_settings:
+# - regexp: "^PermitRootLogin"
+#   setting: "PermitRootLogin no"
+# - regexp: "^DenyUsers deploy"
+#   setting: "DenyUsers deploy"
 
 mode:             "deploy" # dev || deploy
 

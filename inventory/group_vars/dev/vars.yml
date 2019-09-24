@@ -5,6 +5,9 @@ environ:  "dev" # dev || test || stage || preprod || prod
 # private vars
 login_user_passphrase:  "{{ vault_login_user_passphrase }}"
 
+# ssh vars
+create_login_user:      true
+
 # apache vars:
 hostname:               "{{ app_name }}-{{environ}}"
 domainname:             "library.jhu.edu"
@@ -18,3 +21,7 @@ firewalld_ports:
   - port: "{{ okapi_port }}"
     protocol: tcp
     state: enabled
+
+# SSH vars
+login_password:         "{{ lookup('ini', 'login_password section=dev file=~/.ansible.ini') }}"
+login_user_grant_sudo:  true
